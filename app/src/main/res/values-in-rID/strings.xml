@@ -893,4 +893,5 @@
     <string name="device_mute_recovery_volume_disabled">Nonaktif</string>
     <string name="device_volume_zero_playback_paused">Pemutaran dijeda karena volume perangkat berada di angka 0. Naikkan volume untuk melanjutkan.</string>
     <string name="eq_screen_subtitle">Sesuaikan pemutaran suara untuk telinga Anda</string>
+    <string name="eq_sound_shaping_on">Pembentukan suara diaktifkan</string>
 </resources>
