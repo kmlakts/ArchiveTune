@@ -13,7 +13,7 @@
     <string name="mood_and_genres">Mood &amp; Genre</string>
     <string name="account">Akun</string>
     <string name="quick_picks">Pilihan cepat</string>
-    <string name="speed_dial">Panggil cepat</string>
+    <string name="speed_dial">Speed dial</string>
     <string name="forgotten_favorites">Favorit yang terlupakan</string>
     <string name="keep_listening">Teruslah mendengarkan</string>
     <string name="your_youtube_playlists">Playlist YouTube Anda</string>
@@ -594,10 +594,10 @@
     <string name="last_start">Mulai Terakhir</string>
     <string name="last_end">Akhir Terakhir</string>
     <string name="debug_logs">Log Debug</string>
-    <string name="log_level_verbose">Bertele-tele</string>
+    <string name="log_level_verbose">Verbose</string>
     <string name="log_level_debug">Debug</string>
-    <string name="log_level_info">Informasi</string>
-    <string name="log_level_warning">Peringatan</string>
+    <string name="log_level_info">Info</string>
+    <string name="log_level_warning">Warning</string>
     <string name="log_level_error">Kesalahan</string>
     <string name="filter_all_logs">Semua</string>
     <string name="clear">Bersihkan</string>
@@ -690,7 +690,7 @@
     <string name="together_hosting">Menyelenggarakan sesi</string>
     <string name="together_joining">Bergabung dengan sesi</string>
     <string name="together_connected">Terhubung</string>
-    <string name="together_error_state">Kesalahan</string>
+    <string name="together_error_state">Error</string>
     <string name="got_it">Mengerti</string>
     <string name="together_dont_show_again">Jangan tampilkan ini lagi</string>
     <string name="together_welcome_title">Selamat datang di ArchiveTune Musik Bersama</string>
@@ -1066,7 +1066,7 @@
     <string name="together_activity_song_skipped">%1$s melompat ke %2$s</string>
     <string name="together_activity_queue_updated">%1$s mengubah antrean</string>
     <string name="together_activity_playback_state_changed">%1$s mengubah status pemutaran</string>
-    <string name="together_activity_error">Kesalahan: %1$s</string>
+    <string name="together_activity_error">Error: %1$s</string>
     <string name="add_another_account">Tambahkan akun lain</string>
     <string name="unsaved_account_dialog_title">Akun belum disimpan</string>
     <string name="unsaved_account_dialog_text">Akun Anda saat ini belum disimpan. Apakah Anda ingin menyimpannya sebelum menambahkan akun lain?</string>
