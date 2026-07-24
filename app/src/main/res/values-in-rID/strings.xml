@@ -13,12 +13,12 @@
     <string name="mood_and_genres">Mood &amp; Genre</string>
     <string name="account">Akun</string>
     <string name="quick_picks">Pilihan cepat</string>
-    <string name="speed_dial">Speed dial</string>
+    <string name="speed_dial">Pintasan cepat</string>
     <string name="forgotten_favorites">Favorit yang terlupakan</string>
     <string name="keep_listening">Teruslah mendengarkan</string>
     <string name="your_youtube_playlists">Playlist YouTube Anda</string>
     <string name="similar_to">Mirip dengan</string>
-    <string name="new_release_albums">Album rilis baru</string>
+    <string name="new_release_albums">Album rilis terbaru</string>
     <string name="integration">Integrasi</string>
     <string name="today">Hari ini</string>
     <string name="yesterday">Kemarin</string>
@@ -44,7 +44,7 @@
     <string name="other_versions">Versi lainnya</string>
     <string name="liked_songs">Disukai</string>
     <string name="downloaded_songs">Lagu yang diunduh</string>
-    <string name="playlist_is_empty">Playlist-nya kosong</string>
+    <string name="playlist_is_empty">Playlist ini kosong</string>
     <string name="remove_download_playlist_confirm">Apakah Anda yakin ingin menghapus semua lagu playlist \"%s\" dari penyimpanan Lagu Unduhan?</string>
     <string name="delete_playlist_confirm">Yakin ingin menghapus playlist \"%s\"?</string>
     <string name="change_playlist_cover">Ubah sampul playlist</string>
@@ -648,7 +648,7 @@
     <string name="playlist_suggestion_source_title">Judul playlist</string>
     <string name="playlist_suggestion_source_content">Konten playlist</string>
     <string name="playlist_suggestion_source_both">Judul dan konten playlist</string>
-    <string name="music_together">ArchiveTune Musik Bersama</string>
+    <string name="music_together">ArchiveTune Music Together</string>
     <string name="together_display_name">Nama tampilan</string>
     <string name="together_display_name_placeholder">Nama Anda</string>
     <string name="together_port">Port sesi</string>
@@ -693,7 +693,7 @@
     <string name="together_error_state">Error</string>
     <string name="got_it">Mengerti</string>
     <string name="together_dont_show_again">Jangan tampilkan ini lagi</string>
-    <string name="together_welcome_title">Selamat datang di ArchiveTune Musik Bersama</string>
+    <string name="together_welcome_title">Selamat datang di ArchiveTune Music Together</string>
     <string name="together_welcome_body">Music Together memungkinkan beberapa perangkat berbagi sesi langsung dengan antrean dan pemutaran yang disinkronkan.</string>
     <string name="together_welcome_host_title">Selenggarakan sesi</string>
     <string name="together_welcome_host_body">Ketuk Mulai sesi, lalu bagikan tautan sesi. Biarkan ArchiveTune tetap terbuka di latar belakang saat menghosting.</string>
@@ -732,7 +732,7 @@
     <string name="play_all">Putar semua</string>
     <string name="sort_ascending">Urutkan menaik</string>
     <string name="all_songs">Semua Lagu</string>
-    <string name="shortest_duration">‐Durasi tersingkat</string>
+    <string name="shortest_duration">Durasi tersingkat</string>
     <string name="year_sort">Tahun</string>
     <string name="newest_first">Terbaru dahulu</string>
     <string name="see_all">Lihat semua</string>
@@ -758,7 +758,7 @@
     <string name="font_preference_system">Sistem</string>
     <string name="duration_sort">Durasi</string>
     <string name="offline_shortcut">Offline</string>
-    <string name="cached">Tersimpan di Cache</string>
+    <string name="cached">Cached</string>
     <string name="account_integrations_summary">Discord, Last.fm, Libre.fm, ListenBrainz</string>
     <string name="instant_playback">Pemutaran Instan</string>
     <string name="on_device">Di perangkat ini</string>
@@ -768,7 +768,7 @@
     <string name="library_top_mixes_refresh">Segarkan mix</string>
     <string name="library_top_mixes_configure_ai">Konfigurasikan AI</string>
     <string name="library_top_mixes_ai_not_configured_title">Konfigurasikan AI untuk membuat mix</string>
-    <string name="library_top_mixes_ai_not_configured_desc">Integrasi AI diperlukan sebelum ArchiveTune dapat membuat mix teratas pribadi.</string>
+    <string name="library_top_mixes_ai_not_configured_desc">Integrasi AI diperlukan sebelum ArchiveTune dapat membuat mix teratas secara pribadi.</string>
     <string name="library_top_mixes_no_recent_history_title">Tidak ada riwayat mix mendengarkan saat ini</string>
     <string name="library_top_mixes_no_recent_history">Dengarkan lagu lainnya, kemudian segarkan untuk membuat mix AI dari riwayat mendengarkan anda.</string>
     <string name="library_top_mixes_failed">Gagal membuat mix teratas</string>
@@ -784,7 +784,7 @@
     <string name="grid_view">Tampilan Grid</string>
     <string name="personal_label">Personal</string>
     <string name="youtube_synced">Youtube Tersinkronisasi</string>
-    <string name="options_label">Pengaturan</string>
+    <string name="options_label">Opsi</string>
     <string name="top_artist_badge">TOP ARTIST</string>
     <string name="no_artist_yet">Tidak Ada Artis</string>
     <string name="total_label">total</string>
