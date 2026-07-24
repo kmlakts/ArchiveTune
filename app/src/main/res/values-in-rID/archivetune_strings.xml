@@ -170,7 +170,7 @@
     <string name="lyrics_share_layout">Tata Letak</string>
     <string name="lyrics_share_layout_square">Persegi</string>
     <string name="lyrics_share_layout_portrait">Potret</string>
-    <string name="lyrics_share_layout_story">Cerita</string>
+    <string name="lyrics_share_layout_story">Story</string>
     <string name="lyrics_share_background_blur">Latar belakang blur</string>
     <string name="lyrics_share_background_blur_value">%1$d piksel</string>
     <string name="lyrics_line_blur">Blur baris lirik</string>
@@ -335,7 +335,7 @@
         <item quantity="other">%d detik</item>
     </plurals>
     <string name="audio_crossfade_title">Crossfade</string>
-    <string name="audio_crossfade_description">Memudar keluar lagu saat ini seiring lagu berikutnya memudar masuk.</string>
+    <string name="audio_crossfade_description">Lakukan transisi antar lagu dengan mulus melalui efek transisi keluar dan masuk.</string>
     <string name="audio_crossfade_dialog_title">Durasi crossfade</string>
     <string name="audio_crossfade_seconds">%1$s dtk</string>
     <string name="crossfade_gapless_title">Lewati album tanpa jeda</string>
@@ -628,7 +628,7 @@
     <string name="about_position_lead_dev">Eh?</string>
     <string name="about_position_developers">Pengembang | Tim</string>
     <string name="about_position_yuki">dummy reze | Admin</string>
-    <string name="about_position_mo_agamy">Kerangka Dasar | Metrolist</string>
+    <string name="about_position_mo_agamy">Base dari | Metrolist</string>
     <string name="about_position_zion_huang">Pencipta InnerTune · Fondasi untuk Metrolist, ArchiveTune, dan fork lainnya</string>
     <string name="about_content_desc_github">GitHub</string>
     <string name="about_content_desc_website">Situs Web</string>
