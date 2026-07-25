@@ -291,7 +291,7 @@
     <string name="token_adv_login_description">دي طريقة تسجيل دخول متقدمة. كبديل لبوابة الويب، تقدر تدخل أو تحدث رمز تسجيل الدخول بتاعك هنا مباشرة. مثلاً، ده ممكن يسرع تسجيل الدخول على أجهزة متعددة. يرجى العلم إن أي تنسيقات غير صالحة للرموز هيفشل التطبيق في تحليلها ومش هيقبلها</string>
     <string name="yt_sync">مزامنة تلقائية مع الحساب</string>
     <string name="force_sync_on_switch_account">فرض المزامنة عند تغيير الحساب</string>
-    <string name="force_sync_on_switch_account_desc">بيجدد ويعيد تحميل كل أغانيك والبلاي ليستات بتاعتك أول ما تبدل لحساب تاني.</string>
+    <string name="force_sync_on_switch_account_desc">بيجدد ويعيد تحميل كل أغانيك والبلاي ليستات بتاعتك أول ما تبدل لحساب تاني</string>
     <string name="more_content">محتوى أكتر</string>
     <string name="general">عام</string>
     <string name="proxy">بروكسي</string>
