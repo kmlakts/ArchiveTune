@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home">گھر</string>
     <string name="songs">گیت</string>
@@ -675,8 +675,8 @@
     <string name="percent_format">%1$d%%</string>
     <string name="listenbrainz_scrobbling">ListenBrainz کی سکروبلنگ</string>
     <string name="listenbrainz_scrobbling_description">اب سنا جا رہا ہے اور سننے کے اختتامات کو ListenBrainz کو بھیجنے کے لئے فعال کریں</string>
-    <string name="set_listenbrainz_token">ListenBrainz کو ٹوکن کو ترتیب دیں</string>
-    <string name="edit_listenbrainz_token">ListenBrainz کو ٹوکن کی ترمیم کریں</string>
+    <string name="set_listenbrainz_token">‫ListenBrainz کے ٹوکن کو ترتیب دیں</string>
+    <string name="edit_listenbrainz_token">‫ListenBrainz کے ٹوکن کی ترمیم کریں</string>
     <string name="discord_activity_name">سرگرمی کا نام</string>
     <string name="discord_activity_details">سرگرمی کی تفصیلات</string>
     <string name="discord_activity_state">سرگرمی کی اسلوب</string>
@@ -786,4 +786,27 @@
     <string name="status_inactive">غیر منسلک</string>
     <string name="last_start">آاخری شروع</string>
     <string name="last_end">آخری اختتام پزیر</string>
+    <string name="remove_playlist_cover">حسبِ ضرورت تصویر کو ہٹائیں</string>
+    <string name="playlist_cover_updated">مجموعہ گیت کی تصویر پیش رفت ہوئی</string>
+    <string name="playlist_cover_update_failed">مجموعہ گیت کی تصویر پیش رفت نہیں کری جا سکی</string>
+    <string name="start_mix">آمیزہ شروع کریں</string>
+    <string name="remove_from_library_confirm">‫\"%1$s\" کو فہرست سے کرن کیا جائے؟‬</string>
+    <string name="refetch_canvas">تصویر کی دوبارا دریافت کی جائے</string>
+    <string name="canvas_refetch_failed">جاندار تصویر کو تازہ نہ کیا جا سکا</string>
+    <string name="custom_background_subtitle">پخش کنندہ اور کلمات کے پس منظر کا پیش نظارہ اور مرتب کریں</string>
+    <string name="custom_background_preview_player">سازندہ</string>
+    <string name="custom_background_preview_lyrics">کلمات</string>
+    <string name="custom_background_preview_empty">تصویر چن کر فوری پیش نظارہ کریں۔</string>
+    <string name="custom_background_replace_image">تصویر تبدیل کریں</string>
+    <string name="custom_background_remove_image">تصویر ہرج کریں</string>
+    <string name="custom_background_adjustments">تصْفیات</string>
+    <string name="custom_background_adjustments_description">دونوں پس منظر میں تصویر کو ترتیب دیں۔</string>
+    <string name="custom_background_blur_value">%1$d dp</string>
+    <string name="custom_background_scale_value">%%%1$d</string>
+    <string name="custom_background_permission_error">آرکائیوٹیون اس تصویر تک رسائی نہیں رکھ سکا۔</string>
+    <string name="playback_login_po_token">‫لاگن کا PO ٹوکن</string>
+    <string name="enable_megalobiz_lyrics">‫Megalobiz کے کلمات کو فعل کریں</string>
+    <string name="eq_screen_subtitle">نشر کو اپنے کانوں اور سازو سامان کے مطابق ڈھالیں</string>
+    <string name="eq_sound_shaping_on">سمعی ڈھالنا فعل ہے</string>
+    <string name="eq_sound_shaping_off">سمعی ڈھالنا غیر فعل ہے</string>
 </resources>
