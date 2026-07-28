@@ -435,8 +435,8 @@
     <string name="added_n_songs_to_n_playlists">%1$d Songs zu %2$d Playlists hinzugefügt</string>
     <string name="queue_continue_playing">Wiedergabe fortsetzen</string>
     <string name="queue_autoplaying_similar">Automatisch ähnliche Musik abspielen</string>
-    <string name="random_theme_on_startup">Zufälliges Thema beim Start</string>
-    <string name="random_theme_on_startup_desc">Wende eine zufällige Farbpalette bei jedem Appstart an</string>
+    <string name="random_theme_on_startup">Zufälliges Design beim Start</string>
+    <string name="random_theme_on_startup_desc">Bei jedem Start der App eine zufällige Farbpalette anwenden</string>
     <string name="music_recognition">Musikerkennung</string>
     <string name="removed_song_from_queue">\"%s\" aus der Warteschlange entfernt</string>
     <string name="speed_dial">Schnellwahl</string>
@@ -1057,4 +1057,7 @@
     <string name="custom_background_adjustments_description">Bild in beiden Vorschauen anpassen.</string>
     <string name="eq_bass_boost_description">Wirkung tiefer Frequenzen verstärken</string>
     <string name="widget_top_song_summary">Aktuell Top: %1$s</string>
+    <string name="custom_background_subtitle">Vorschau und Anpassung des Players und des Hintergrunds für die Liedtexte</string>
+    <string name="custom_background_preview_player">Player</string>
+    <string name="custom_background_permission_error">ArchiveTune konnte den Zugriff auf dieses Bild nicht aufrechterhalten.</string>
 </resources>
