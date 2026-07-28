@@ -57,4 +57,27 @@
     <string name="library_top_mixes_ai_not_configured_desc">จำเป็นต้องมีการผสานรวม AI ก่อนที่ ArchiveTune จะสามารถสร้างมิกซ์เพลงยอดนิยมส่วนบุคคลได้</string>
     <string name="library_top_mixes_no_recent_history_title">ยังไม่มีมิกซ์จากการฟังล่าสุดในตอนนี้</string>
     <string name="library_top_mixes_ai_not_configured_title">กำหนดค่า AI เพื่อสร้างมิกซ์เพลง</string>
+    <string name="library_top_mixes_no_recent_history">ฟังเพลงเพิ่มเติม แล้วรีเฟรชเพื่อให้ AI สร้างมิกซ์เพลงจากประวัติการฟังล่าสุดของคุณ</string>
+    <string name="library_top_mixes_no_valid_mixes">AI ไม่ได้ส่งคืนมิกซ์ที่สามารถเล่นได้จากประวัติล่าสุดของคุณ.</string>
+    <string name="library_top_mixes_failed">ไม่สามารถสร้างมิกซ์ยอดนิยมได้</string>
+    <string name="your_playlists">เพลย์ลิสต์ของคุณ</string>
+    <string name="see_all">ดูทั้งหมด</string>
+    <string name="your_artists">ศิลปินของคุณ</string>
+    <string name="all_songs">เพลงทั้งหมด</string>
+    <string name="newest_first">ใหม่ล่าสุดก่อน</string>
+    <string name="oldest_first">เก่าที่สุดก่อน</string>
+    <string name="sort_a_to_z">A → Z</string>
+    <string name="sort_z_to_a">Z → A</string>
+    <string name="sort_artist">ศิลปิน</string>
+    <string name="most_played_sort">เล่นบ่อยที่สุด</string>
+    <string name="recently_added">เพิ่มล่าสุด</string>
+    <string name="sort_descending">เรียงลำดับจากมากไปน้อย</string>
+    <string name="sort_ascending">เรียงลำดับจากน้อยไปมาก</string>
+    <string name="your_collection">คอลเลกชันของคุณ</string>
+    <string name="playing_desc">กำลังเล่น</string>
+    <string name="tracks_label">แทร็ก</string>
+    <string name="song_singular">เพลง</string>
+    <string name="more_playlists_desc">เพลย์ลิสต์เพิ่มเติม</string>
+    <string name="more_label">เพิ่มเติม</string>
+    <string name="tracks_count_label">จำนวนแทร็ก</string>
 </resources>
