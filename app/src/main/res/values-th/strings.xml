@@ -80,4 +80,15 @@
     <string name="more_playlists_desc">เพลย์ลิสต์เพิ่มเติม</string>
     <string name="more_label">เพิ่มเติม</string>
     <string name="tracks_count_label">จำนวนแทร็ก</string>
+    <string name="recently_updated">เพื่งอัพเดท</string>
+    <string name="custom_order">จัดเรียงเอง</string>
+    <string name="personal_label">ส่วนตัว</string>
+    <string name="youtube_synced">ซิงค์กับ Youtubbe แล้ว</string>
+    <string name="options_label">ตัวเลือ่ก</string>
+    <string name="top_artist_badge">ศิลปินยอดฮิต</string>
+    <string name="no_artist_yet">ยังไม่มีศิลปิน</string>
+    <string name="total_label">ทั้งหมด</string>
+    <string name="play_time">เวลาเล่น</string>
+    <string name="subscribed_only">สมาชิกเท่านั้น</string>
+    <string name="all_artists_filter">ศิลปินทั้งหมด</string>
 </resources>
