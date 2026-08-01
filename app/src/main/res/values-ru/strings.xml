@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home">Главная</string>
     <string name="songs">Песни</string>
@@ -674,4 +674,44 @@
     <string name="album_backdrop_desc">Показывать изображение в качестве размытого фона на плеере</string>
     <string name="backdrop_blur_amount">Степень размытия фона</string>
     <string name="backdrop_blur_amount_value">%1$d%%</string>
+    <string name="offline_shortcut">Оффлайн</string>
+    <string name="cached">В кэше</string>
+    <string name="local_files">Локальные файлы</string>
+    <string name="downloaded_desc">Загруженные</string>
+    <string name="instant_playback">Мгновенное воспроизведение</string>
+    <string name="on_device">На устройстве</string>
+    <string name="recently_played">Недавние</string>
+    <string name="top_mixes">Лучшие миксы для тебя</string>
+    <string name="library_top_mixes_loading">Готовим твои ИИ-миксы…</string>
+    <string name="library_top_mixes_refresh">Обновить миксы</string>
+    <string name="library_top_mixes_configure_ai">Настроить ИИ</string>
+    <string name="library_top_mixes_ai_not_configured_title">Настроить ИИ для создания миксов</string>
+    <string name="library_top_mixes_ai_not_configured_desc">Для создания персональных топ-миксов ArchiveTune необходима интеграция с ИИ.</string>
+    <string name="library_top_mixes_no_recent_history_title">Нет недавно прослушанного микса</string>
+    <string name="library_top_mixes_no_recent_history">Послушайте несколько песен и обновите страницу для создания ИИ-миксов на основе вашей истории прослушивания.</string>
+    <string name="library_top_mixes_no_valid_mixes">Не удалось создать ни одного микса на основе вашей истории прослушивания.</string>
+    <string name="library_top_mixes_failed">Не удалось создать топ-миксы</string>
+    <string name="your_playlists">Твои плейлисты</string>
+    <string name="see_all">Посмотреть все</string>
+    <string name="your_artists">Твои исполнители</string>
+    <string name="all_songs">Все песни</string>
+    <string name="newest_first">Сначала новые</string>
+    <string name="oldest_first">Сначала старые</string>
+    <string name="sort_a_to_z">А → Я</string>
+    <string name="sort_z_to_a">Я → А</string>
+    <string name="sort_artist">Исполнитель</string>
+    <string name="recently_added">Недавно добавленные</string>
+    <string name="play_all">Прослушать все</string>
+    <string name="sort_descending">Сортировать по убыванию</string>
+    <string name="sort_ascending">Сортировать по возрастанию</string>
+    <string name="your_collection">Твоя коллекция</string>
+    <string name="playing_desc">Играет</string>
+    <string name="tracks_label">треки</string>
+    <string name="song_singular">Песня</string>
+    <string name="more_playlists_desc">Больше плейлистов</string>
+    <string name="more_label">Ещё</string>
+    <string name="tracks_count_label">Количество треков</string>
+    <string name="recently_updated">Недавно обновленные</string>
+    <string name="custom_order">Своя очередь</string>
+    <string name="list_view">Просмотр списка</string>
 </resources>
