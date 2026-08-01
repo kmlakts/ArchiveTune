@@ -713,5 +713,7 @@
     <string name="tracks_count_label">Количество треков</string>
     <string name="recently_updated">Недавно обновленные</string>
     <string name="custom_order">Своя очередь</string>
-    <string name="list_view">Просмотр списка</string>
+    <string name="list_view">Вид списка</string>
+    <string name="grid_view">Вид сетки</string>
+    <string name="personal_label">Личное</string>
 </resources>
