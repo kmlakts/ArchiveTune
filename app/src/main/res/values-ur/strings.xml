@@ -307,7 +307,7 @@
     <string name="queue_searched_songs">تلاش شدہ گیت</string>
     <string name="queue_continue_playing">سننا جاری رکھیں</string>
     <string name="queue_autoplaying_similar">ایک جیسے گیت خود بجائیں</string>
-    <string name="music_player">پخش کننده موسیقی</string>
+    <string name="music_player">موسیقی سازندہ</string>
     <string name="settings">تنظیمات</string>
     <string name="appearance">صورت</string>
     <string name="theme">بناوٹ</string>
@@ -411,7 +411,7 @@
     <string name="custom_value">حسب ضرورت وصف</string>
     <string name="archivetune_canvas">آرکائوٹیون کینوس</string>
     <string name="archivetune_canvas_desc">سنتے دوران البم کی تصویر کو جان دیں (BetterLyrics کی جانب سے)</string>
-    <string name="player_background_style_v8_v9_desc">V8 اور V9 طرز میں دستیاب نہیں</string>
+    <string name="player_background_style_v8_v9_desc">‫V8 اور V9 طرز سازندہ میں دستیاب نہیں</string>
     <string name="show_button1_description">ڈسکورڈ رچ پریژنس کے پہلے رکمے کی رؤیت کو تبدیل کریں</string>
     <string name="show_button2_description">ڈسکورڈ رچ پریژنس کے دوسرے رکمے کی رؤیت کو تبدیل کریں</string>
     <string name="discord_activity_type">سرگرمی کی قسم</string>
@@ -424,12 +424,12 @@
     <string name="blur_intensity">دھندلاوٹ کی شدت</string>
     <string name="blur_intensity_value">%1$d dp</string>
     <string name="album_backdrop">پس منظر کی دھندلاوٹ</string>
-    <string name="album_backdrop_desc">پخش کننده کے پس منظر پر البم کی تصویر دھندلی کرکے دکھائیں</string>
+    <string name="album_backdrop_desc">سازندہ کے پس منظر پر البم کی تصویر دھندلی کرکے دکھائیں</string>
     <string name="backdrop_blur_amount">پس منظر کی دھندلاوٹ کی مقدار</string>
     <string name="backdrop_blur_amount_value">%1$d%%</string>
-    <string name="player">پخش کننده</string>
-    <string name="player_slider_style">پخش کننده کے سلاخ کا انداز</string>
-    <string name="player_and_audio">پخش کننده اور سمعی</string>
+    <string name="player">سازندہ</string>
+    <string name="player_slider_style">سازندہ کے سلاخ کا انداز</string>
+    <string name="player_and_audio">سازندہ اور سمعی</string>
     <string name="slider_style_standard">معمولی</string>
     <string name="slider_style_wavy">لہراتا</string>
     <string name="slider_style_thick">موٹا</string>
@@ -530,7 +530,7 @@
     <string name="external_downloader_package_desc">بیرونی ڈاؤنلوڈکار کے پیکج کا نام (مثلاََ: com.deniscerri.ytdl)</string>
     <string name="open_with_downloader">ڈاؤنلوڈکار کے ساتھ کھولیں</string>
     <string name="external_downloader_not_installed">بیرونی ڈاؤنلوڈکار ایپ تنصیب کردہ نہیں</string>
-    <string name="external_downloader_not_configured">کوئ بیرونی ڈاؤنلاڈکار تشکیل کردہ نہیں۔ تنظیمات ← پخش کننده میں جا کر سیٹ کریں۔</string>
+    <string name="external_downloader_not_configured">کوئ بیرونی ڈاؤنلاڈکار تشکیل کردہ نہیں۔ تنظیمات ← سازندہ میں جا کر سیٹ کریں۔</string>
     <string name="add_symbol">علامت شامل کریں</string>
     <string name="enter_symbol">علامت داخل کریں</string>
     <string name="equalizer">ایکولائزر</string>
@@ -684,7 +684,7 @@
     <string name="permission_storage_desc">نشر کو ممکن بنانے کے لئے آپکی ڈاؤنلوڈ کردہ اور مقامی سمعی مسلیں پڑھنا ضروری ہے۔</string>
     <string name="together_room_closed_inactivity_notification">کمرہ بند کردیا گیا کیونکہ دس منٹ تک کوئی شامل نہیں ہوا</string>
     <string name="show_player_volume_bar">حجم آواز کی سنٹی کو دکھایا جائے</string>
-    <string name="player_volume_bar_v7_v8_only">‫صرف V7 اور V8 والے پخش کننده کے اسلوب میں دستیاب ہے</string>
+    <string name="player_volume_bar_v7_v8_only">‫صرف V7 اور V8 والے سازندہ کے اسلوب میں دستیاب ہے</string>
     <string name="force_high_refresh_rate">تازہ کرنے کی رفتار کو زبردستی بڑھائیں</string>
     <string name="max_supported_refresh_rate">‫زیادہ سے زیادہ ممکن : Hz %1$d‬</string>
     <string name="discord_activity_button_1_url">‫پہلے بٹن کی URL کا مصدر</string>
@@ -764,8 +764,8 @@
     <string name="no_logs">کوئی روزنامچه نہیں</string>
     <string name="show_nerd_stats">ذہنی لوگوں کے لئے اعداد و شمار دکھائیں</string>
     <string name="description_show_nerd_stats">‫حقیقی وقت کے نشر کے اعداد و شمار دکھائے جائیں (codec, bitrate, buffer)</string>
-    <string name="display_codec_on_player">پخش کننده پر کوڈیک دکھائیں</string>
-    <string name="description_display_codec_on_player">پخش کننده پر موجودہ سمعی کے کوڈیک کی معلومات دکھائی جائے</string>
+    <string name="display_codec_on_player">سازندہ پر کوڈیک دکھائیں</string>
+    <string name="description_display_codec_on_player">سازندہ پر موجودہ سمعی کے کوڈیک کی معلومات دکھائی جائے</string>
     <string name="nerd_stats">نرڈ کے اعداد و شمار</string>
     <string name="track_label">گانا</string>
     <string name="no_track_playing">کوئی گانا نہیں چل رہا</string>
@@ -793,7 +793,7 @@
     <string name="remove_from_library_confirm">‫\"%1$s\" کو فہرست سے کرن کیا جائے؟‬</string>
     <string name="refetch_canvas">تصویر کی دوبارا دریافت کی جائے</string>
     <string name="canvas_refetch_failed">جاندار تصویر کو تازہ نہ کیا جا سکا</string>
-    <string name="custom_background_subtitle">پخش کنندہ اور کلمات کے پس منظر کا پیش نظارہ اور مرتب کریں</string>
+    <string name="custom_background_subtitle">سازندہ اور کلمات کے پس منظر کا پیش نظارہ اور مرتب کریں</string>
     <string name="custom_background_preview_player">سازندہ</string>
     <string name="custom_background_preview_lyrics">کلمات</string>
     <string name="custom_background_preview_empty">تصویر چن کر فوری پیش نظارہ کریں۔</string>
@@ -809,4 +809,8 @@
     <string name="eq_screen_subtitle">نشر کو اپنے کانوں اور سازو سامان کے مطابق ڈھالیں</string>
     <string name="eq_sound_shaping_on">سمعی ڈھالنا فعل ہے</string>
     <string name="eq_sound_shaping_off">سمعی ڈھالنا غیر فعل ہے</string>
+    <string name="custom_background_permission_cleanup_error">پچھلی تصویر تک رسائی خلاصی نہیں ہو سکی۔</string>
+    <string name="eq_enable_description">‫ان کنٹرولوں کو ArchiveTune کے پخش کنندہ پر لاگو کرتا ہے</string>
+    <string name="eq_control_mode">کنٹرول اسلوب</string>
+    <string name="eq_basic">بنیادی</string>
 </resources>
