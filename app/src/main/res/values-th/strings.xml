@@ -221,9 +221,9 @@
     <string name="mime_type">ประเภท MIME</string>
     <string name="no_matching_playlists">ไม่พบเพลย์ลิสต์ที่ตรงกัน</string>
     <string name="codecs">ตัวถอดรหัส</string>
-    <string name="bitrate">อัตราการถ่ายโอนข้อมูล (Bitrate)</string>
-    <string name="sample_rate">อัตราการสุ่มตัวอย่าง (Sample rate)</string>
-    <string name="loudness">ความดัง (Loudness)</string>
+    <string name="bitrate">บิตเรต</string>
+    <string name="sample_rate">อัตราการสุ่มตัวอย่าง</string>
+    <string name="loudness">ความดัง</string>
     <string name="volume">ระดับเสียง</string>
     <string name="show_player_volume_bar">แสดงแถบระดับเสียง</string>
     <string name="player_volume_bar_v7_v8_only">ใช้ได้เฉพาะกับสไตล์เครื่องเล่น V7 และ V8 เท่านั้น</string>
@@ -335,4 +335,21 @@
     <string name="color_palette">ชุดสี</string>
     <string name="customize_theme_colors">เลือกสีธีมของแอพ</string>
     <string name="palette_default">ค่าเริ่มต้น</string>
+    <string name="palette_ocean_blue">โอเชียนบลู</string>
+    <string name="palette_arctic_blue">อาร์กติก</string>
+    <string name="palette_midnight_navy">มิดไนท์</string>
+    <string name="palette_sky_blue">สกายบลู</string>
+    <string name="palette_cobalt_blue">โคบอลต์</string>
+    <string name="palette_electric_blue">อิเล็คทริค</string>
+    <string name="palette_emerald_green">เอมเมอรัลด์</string>
+    <string name="palette_teal_wave">ทีลเว้ฟ</string>
+    <string name="palette_forest_green">ฟอเรสต์</string>
+    <string name="palette_spotify_green">สปอติฟาย</string>
+    <string name="palette_mint_fresh">มินต์</string>
+    <string name="palette_olive_garden">โอลีฟ</string>
+    <string name="palette_sage_green">เซจ</string>
+    <string name="palette_sunset_orange">ซันเซ็ท</string>
+    <string name="palette_golden_hour">โกลด์เด้น</string>
+    <string name="palette_warm_amber">แอมเบอร์</string>
+    <string name="palette_tangerine_blast">แทนเจอรีน</string>
 </resources>
