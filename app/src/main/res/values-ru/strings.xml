@@ -44,7 +44,7 @@
     <string name="no_results_found">Не найдено результатов</string>
     <string name="other_versions">Другие версии</string>
     <string name="liked_songs">Понравившиеся песни</string>
-    <string name="downloaded_songs">Скачанные песни</string>
+    <string name="downloaded_songs">Загруженные песни</string>
     <string name="playlist_is_empty">Плейлист пуст</string>
     <string name="remove_download_playlist_confirm">Вы действительно хотите удалить \"%s\" песен из хранилища скачанных песен?</string>
     <string name="delete_playlist_confirm">Вы действительно хотите удалить плейлист \"%s\"?</string>
@@ -716,4 +716,24 @@
     <string name="list_view">Вид списка</string>
     <string name="grid_view">Вид сетки</string>
     <string name="personal_label">Личное</string>
+    <string name="options_label">Настройки</string>
+    <string name="top_artist_badge">ЛУЧШИЙ ИСПОЛНИТЕЛЬ</string>
+    <string name="total_label">всего</string>
+    <string name="most_tracks">Больше треков</string>
+    <string name="least_tracks">Меньше треков</string>
+    <string name="play_time">Время воспроизведения</string>
+    <string name="subscribed_only">Только для подписчиков</string>
+    <string name="all_artists_filter">Все исполнители</string>
+    <string name="artist_subtitle">Исполнитель</string>
+    <string name="recently_played_artists">Недавно прослушанные исполнители</string>
+    <string name="newest_year">Новый год</string>
+    <string name="oldest_year">Старый год</string>
+    <string name="longest_duration">Наибольшая длительность</string>
+    <string name="shortest_duration">Кратчайшая длительность</string>
+    <string name="year_sort">Год</string>
+    <string name="duration_sort">Длительность</string>
+    <string name="featured_album_badge">РЕКОМЕНДУЕМЫЙ АЛЬБОМ</string>
+    <string name="remove_playlist_cover">Убрать свою обложку</string>
+    <string name="playlist_cover_updated">Обложка обновлена</string>
+    <string name="playlist_cover_update_failed">Не удалось обновить обложку</string>
 </resources>
