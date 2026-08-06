@@ -994,12 +994,12 @@
     <string name="together_shuffle_on">Aleatorio activado</string>
     <string name="together_shuffle_off">Aleatorio desactivado</string>
     <string name="together_repeat_mode">Repetir %1$d</string>
-    <string name="together_participants_empty">Aún no hay participantes.</string>
+    <string name="together_participants_empty">Aún no hay participantes</string>
     <string name="together_participants_empty_body">Los usuarios que participen en esta sesión aparecerán aquí.</string>
     <string name="together_activity_log">Registro de actividad</string>
     <string name="together_activity_log_subtitle">Eventos de la sesión y la reproducción</string>
     <string name="together_activity_log_empty">Aún sin actividad</string>
-    <string name="together_activity_log_empty_body">Los eventos de la sesión aparecerán aquí a medida que se produzcan</string>
+    <string name="together_activity_log_empty_body">Los eventos de la sesión aparecerán aquí a medida que se produzcan.</string>
     <string name="together_activity_session_started">La sesión ha comenzado</string>
     <string name="together_activity_joining_session">Únete a una sesión</string>
     <string name="together_activity_join_requested">%1$s solicitó unirse</string>
