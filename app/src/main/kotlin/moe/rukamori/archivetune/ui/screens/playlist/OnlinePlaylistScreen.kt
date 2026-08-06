@@ -664,6 +664,7 @@ fun OnlinePlaylistScreen(
                     ) { song ->
                         YouTubeListItem(
                             item = song.item.second,
+                            showSourceIcon = true,
                             viewCountText =
                                 viewCounts[song.item.second.id]?.let { count ->
                                     formatCompactCount(count.toLong())
