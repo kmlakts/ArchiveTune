@@ -102,6 +102,7 @@ android {
 
         buildConfigField("String", "DATA_SERVER_URL", dataServerUrl.asBuildConfigString())
         buildConfigField("String", "API_BEARER_TOKEN", apiBearerToken.asBuildConfigString())
+        buildConfigField("boolean", "GATEKEEPER_ENABLED", "false")
 
         val nightlyBuildHash =
             (

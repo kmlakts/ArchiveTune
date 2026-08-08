@@ -63,6 +63,10 @@ class GatekeeperRepository
         private var accessGranted = false
 
         suspend fun checkAccess(): GatekeeperResult {
+            if (!BuildConfig.GATEKEEPER_ENABLED) {
+                NetworkGatekeeper.setConnectionBlocked(false)
+                return GatekeeperResult.Allowed
+            }
             if (accessGranted) return GatekeeperResult.Allowed
             return checkMutex.withLock {
                 if (accessGranted) return@withLock GatekeeperResult.Allowed
