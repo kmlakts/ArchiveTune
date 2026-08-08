@@ -106,6 +106,7 @@ private data class HomeLocalContent(
 
 private data class HomeRemoteContent(
     val homePage: HomePage?,
+    val remoteQuickPicks: HomePage.Section?,
     val similarRecommendations: List<SimilarRecommendation>,
     val accountPlaylists: List<PlaylistItem>,
     val accountName: String,
@@ -123,6 +124,7 @@ private data class HomeContent(
                 local.speedDialItems.isNotEmpty() ||
                 local.forgottenFavorites.isNotEmpty() ||
                 local.keepListening.isNotEmpty() ||
+                remote.remoteQuickPicks?.items?.isNotEmpty() == true ||
                 remote.similarRecommendations.isNotEmpty() ||
                 remote.accountPlaylists.isNotEmpty() ||
                 remote.homePage?.sections?.any { it.items.isNotEmpty() } == true
@@ -158,10 +160,12 @@ private data class HomeStateInputs(
                 similarRecommendations = ImmutableList.copyOf(content.remote.similarRecommendations),
                 accountPlaylists = ImmutableList.copyOf(content.remote.accountPlaylists),
                 homePage = content.remote.homePage,
+                remoteQuickPicks = content.remote.remoteQuickPicks,
                 selectedChip = content.selectedChip,
                 accountName = content.remote.accountName,
                 accountImageUrl = content.remote.accountImageUrl,
                 quickPicksDisplayMode = preferences.quickPicksDisplayMode,
+                quickPicksMode = preferences.quickPicksMode,
                 showCategoryChips = preferences.showCategoryChips,
                 showTonalBackdrop = preferences.showTonalBackdrop,
                 isRefreshing = isRefreshing,
@@ -203,8 +207,10 @@ class HomeViewModel
         private val similarRecommendations = MutableStateFlow<List<SimilarRecommendation>?>(null)
         private val accountPlaylists = MutableStateFlow<List<PlaylistItem>?>(null)
         private val homePage = MutableStateFlow<HomePage?>(null)
+        private val remoteQuickPicks = MutableStateFlow<HomePage.Section?>(null)
         private val selectedChip = MutableStateFlow<HomePage.Chip?>(null)
         private val previousHomePage = MutableStateFlow<HomePage?>(null)
+        private val previousRemoteQuickPicks = MutableStateFlow<HomePage.Section?>(null)
 
         private val _allLocalItems = MutableStateFlow<List<LocalItem>>(emptyList())
         val allLocalItems: StateFlow<List<LocalItem>> = _allLocalItems.asStateFlow()
@@ -242,13 +248,15 @@ class HomeViewModel
         private val remoteContent =
             combine(
                 homePage,
+                remoteQuickPicks,
                 similarRecommendations,
                 accountPlaylists,
                 accountName,
                 accountImageUrl,
-            ) { homePage, similarRecommendations, accountPlaylists, accountName, accountImageUrl ->
+            ) { homePage, remoteQuickPicks, similarRecommendations, accountPlaylists, accountName, accountImageUrl ->
                 HomeRemoteContent(
                     homePage = homePage,
+                    remoteQuickPicks = remoteQuickPicks,
                     similarRecommendations = similarRecommendations.orEmpty(),
                     accountPlaylists = accountPlaylists.orEmpty(),
                     accountName = accountName,
@@ -306,6 +314,16 @@ class HomeViewModel
             chips?.filterNot {
                 it.title.contains("podcasts", ignoreCase = true)
             }
+
+        private fun HomePage.extractQuickPicks(): Pair<HomePage, HomePage.Section?> {
+            val quickPicksIndex = sections.indexOfFirst { section ->
+                section.title.equals(context.getString(R.string.quick_picks), ignoreCase = true) ||
+                    section.title.contains("quick pick", ignoreCase = true)
+            }
+            if (quickPicksIndex < 0) return this to null
+
+            return copy(sections = sections.toMutableList().apply { removeAt(quickPicksIndex) }) to sections[quickPicksIndex]
+        }
 
         private fun List<Song>.toQuickPickSample(): List<Song> =
             filter { song -> song.artists.none { it.blockedAt != null } }
@@ -509,7 +527,7 @@ class HomeViewModel
                         YouTube
                             .home()
                             .onSuccess { page ->
-                                homePage.value =
+                                val filteredPage =
                                     page.copy(
                                         chips = filterHomeChips(page.chips),
                                         sections =
@@ -526,6 +544,9 @@ class HomeViewModel
                                                 )
                                             },
                                     )
+                                val (pageWithoutQuickPicks, quickPicksSection) = filteredPage.extractQuickPicks()
+                                remoteQuickPicks.value = quickPicksSection
+                                homePage.value = pageWithoutQuickPicks
                             }.onFailure {
                                 reportException(it)
                                 loadError.value = R.string.error_unknown
@@ -540,6 +561,7 @@ class HomeViewModel
                 }
 
                 _allYtItems.value = similarRecommendations.value?.flatMap { it.items }.orEmpty() +
+                    remoteQuickPicks.value?.items.orEmpty() +
                     homePage.value
                         ?.sections
                         ?.flatMap { it.items }
@@ -632,6 +654,7 @@ class HomeViewModel
             similarRecommendations.value = (artistRecommendations + songRecommendations).shuffled()
 
             _allYtItems.value = similarRecommendations.value?.flatMap { it.items }.orEmpty() +
+                remoteQuickPicks.value?.items.orEmpty() +
                 homePage.value
                     ?.sections
                     ?.flatMap { it.items }
@@ -735,11 +758,12 @@ class HomeViewModel
                     val blockedArtistIds = database.getBlockedArtistIds().toSet()
                     val aiContentFilterPolicy = loadAiContentFilterPolicy()
                     val nextSections = YouTube.home(continuation).getOrNull() ?: return@launch
-                    homePage.value =
+                    val mergedSections = homePage.value?.sections.orEmpty() + nextSections.sections
+                    val mergedPage =
                         nextSections.copy(
                             chips = homePage.value?.chips,
                             sections =
-                                (homePage.value?.sections.orEmpty() + nextSections.sections).map { section ->
+                                mergedSections.map { section ->
                                     section.copy(
                                         items =
                                             filterAiContent(
@@ -752,6 +776,9 @@ class HomeViewModel
                                     )
                                 },
                         )
+                    val (pageWithoutQuickPicks, quickPicksSection) = mergedPage.extractQuickPicks()
+                    quickPicksSection?.let { remoteQuickPicks.value = it }
+                    homePage.value = pageWithoutQuickPicks
                 } finally {
                     isLoadingMore.value = false
                 }
@@ -762,13 +789,16 @@ class HomeViewModel
             chipLoadJob?.cancel()
             if (chip == null || chip == selectedChip.value && previousHomePage.value != null) {
                 homePage.value = previousHomePage.value
+                remoteQuickPicks.value = previousRemoteQuickPicks.value
                 previousHomePage.value = null
+                previousRemoteQuickPicks.value = null
                 selectedChip.value = null
                 return
             }
 
             if (selectedChip.value == null) {
                 previousHomePage.value = homePage.value
+                previousRemoteQuickPicks.value = remoteQuickPicks.value
             }
 
             chipLoadJob =
@@ -778,8 +808,7 @@ class HomeViewModel
                     val blockedArtistIds = database.getBlockedArtistIds().toSet()
                     val aiContentFilterPolicy = loadAiContentFilterPolicy()
                     val nextSections = YouTube.home(params = chip?.endpoint?.params).getOrNull() ?: return@launch
-
-                    homePage.value =
+                    val filteredPage =
                         nextSections.copy(
                             chips = homePage.value?.chips,
                             sections =
@@ -796,6 +825,9 @@ class HomeViewModel
                                     )
                                 },
                         )
+                    val (pageWithoutQuickPicks, quickPicksSection) = filteredPage.extractQuickPicks()
+                    remoteQuickPicks.value = quickPicksSection
+                    homePage.value = pageWithoutQuickPicks
                     selectedChip.value = chip
                 }
         }
