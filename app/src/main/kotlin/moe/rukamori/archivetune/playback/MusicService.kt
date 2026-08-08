@@ -3751,6 +3751,14 @@ class MusicService :
                     applyCurrentFirstShuffleOrder()
                 }
             }
+
+            if (
+                autoLoadMoreEnabled &&
+                !queue.hasNextPage() &&
+                player.mediaItemCount - player.currentMediaItemIndex <= 3
+            ) {
+                onInfiniteQueueEnabled()
+            }
         }
     }
 
