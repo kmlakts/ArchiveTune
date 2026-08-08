@@ -252,16 +252,17 @@ class HomeViewModel
                 similarRecommendations,
                 accountPlaylists,
                 accountName,
-                accountImageUrl,
-            ) { homePage, remoteQuickPicks, similarRecommendations, accountPlaylists, accountName, accountImageUrl ->
+            ) { homePage, remoteQuickPicks, similarRecommendations, accountPlaylists, accountName ->
                 HomeRemoteContent(
                     homePage = homePage,
                     remoteQuickPicks = remoteQuickPicks,
                     similarRecommendations = similarRecommendations.orEmpty(),
                     accountPlaylists = accountPlaylists.orEmpty(),
                     accountName = accountName,
-                    accountImageUrl = accountImageUrl,
+                    accountImageUrl = null,
                 )
+            }.combine(accountImageUrl) { content, accountImageUrl ->
+                content.copy(accountImageUrl = accountImageUrl)
             }
 
         private val homeContent =
