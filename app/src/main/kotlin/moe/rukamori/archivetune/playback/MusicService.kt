@@ -1441,15 +1441,14 @@ class MusicService :
         dataStore.data
             .map { preferences ->
                 val serviceConfig = LastFmServiceConfig.fromPreferences(preferences)
-                Triple(
-                    preferences[EnableLastFMScrobblingKey] ?: false,
-                    !preferences[LastFMSessionKey].isNullOrBlank(),
-                    serviceConfig.initialized,
-                )
+                val enabled = preferences[EnableLastFMScrobblingKey] ?: false
+                val hasSession = !preferences[LastFMSessionKey].isNullOrBlank()
+                val serviceConfigured = serviceConfig.initialized
+                val historyPaused = preferences[PauseListenHistoryKey] ?: false
+                enabled && hasSession && serviceConfigured && !historyPaused
             }.debounce(300)
             .distinctUntilChanged()
-            .collect(scope) { (enabled, hasSession, serviceConfigured) ->
-                val shouldEnable = enabled && hasSession && serviceConfigured
+            .collect(scope) { shouldEnable ->
                 if (shouldEnable && scrobbleManager == null) {
                     val delayPercent = dataStore.get(ScrobbleDelayPercentKey, LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT)
                     val minSongDuration = dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
@@ -1893,9 +1892,14 @@ class MusicService :
                         cleared
                     }
 
-                    HiddenReason.Disabled,
-                    HiddenReason.ServiceStopping,
-                    -> {
+                    HiddenReason.Disabled -> {
+                        ensureDiscordSyncFresh(request.epoch)
+                        DiscordPresenceManager.stop(clearActivity = false)
+                        lastPresenceToken = null
+                        true
+                    }
+
+                    HiddenReason.ServiceStopping -> {
                         val clearToken = token.takeIf { it.isNotBlank() } ?: lastPresenceToken
                         ensureDiscordSyncFresh(request.epoch)
                         val cleared =
@@ -3790,6 +3794,14 @@ class MusicService :
                 if (player.shuffleModeEnabled) {
                     applyCurrentFirstShuffleOrder()
                 }
+            }
+
+            if (
+                autoLoadMoreEnabled &&
+                !queue.hasNextPage() &&
+                player.mediaItemCount - player.currentMediaItemIndex <= 3
+            ) {
+                onInfiniteQueueEnabled()
             }
         }
     }
@@ -6626,27 +6638,31 @@ class MusicService :
                 reason = "timeline_or_position_discontinuity",
                 force = true,
             )
+            val currentMediaId = player.currentMediaItem?.mediaId
+            val currentMetadata = player.currentMetadata
+            val currentDuration = player.duration
+            val currentPosition = player.currentPosition
             scope.launch {
                 try {
-                    val mediaId = player.currentMediaItem?.mediaId
-                    val song = if (mediaId != null) withContext(Dispatchers.IO) { database.song(mediaId).first() } else null
+                    val song = if (currentMediaId != null) withContext(Dispatchers.IO) { database.song(currentMediaId).first() } else null
                     val finalSong =
                         resolvePresenceSong(
                             dbSong = song,
-                            mediaMetadata = player.currentMetadata,
-                            durationMs = player.duration,
+                            mediaMetadata = currentMetadata,
+                            durationMs = currentDuration,
                         ) ?: return@launch
                     try {
                         val lbEnabled = dataStore.get(ListenBrainzEnabledKey, false)
                         val lbToken = dataStore.get(ListenBrainzTokenKey, "")
-                        if (lbEnabled && !lbToken.isNullOrBlank()) {
+                        val historyPaused = dataStore.get(PauseListenHistoryKey, false)
+                        if (lbEnabled && !lbToken.isNullOrBlank() && !historyPaused) {
                             scope.launch(Dispatchers.IO) {
                                 try {
                                     ListenBrainzManager.submitPlayingNow(
                                         this@MusicService,
                                         lbToken,
                                         finalSong,
-                                        player.currentPosition,
+                                        currentPosition,
                                     )
                                 } catch (ie: Exception) {
                                     Timber.tag("MusicService").v(ie, "ListenBrainz playing_now submit failed on transition")
@@ -6707,7 +6723,8 @@ class MusicService :
                     try {
                         val lbEnabled = withContext(Dispatchers.IO) { dataStore.get(ListenBrainzEnabledKey, false) }
                         val lbToken = withContext(Dispatchers.IO) { dataStore.get(ListenBrainzTokenKey, "") }
-                        if (lbEnabled && !lbToken.isNullOrBlank()) {
+                        val historyPaused = withContext(Dispatchers.IO) { dataStore.get(PauseListenHistoryKey, false) }
+                        if (lbEnabled && !lbToken.isNullOrBlank() && !historyPaused) {
                             scope.launch(Dispatchers.IO) {
                                 try {
                                     ListenBrainzManager.submitPlayingNow(this@MusicService, lbToken, finalSong, currentPosition)
@@ -7829,7 +7846,8 @@ class MusicService :
 
                     val lbEnabled = dataStore.get(ListenBrainzEnabledKey, false)
                     val lbToken = dataStore.get(ListenBrainzTokenKey, "")
-                    if (lbEnabled && !lbToken.isNullOrBlank()) {
+                    val historyPaused = dataStore.get(PauseListenHistoryKey, false)
+                    if (lbEnabled && !lbToken.isNullOrBlank() && !historyPaused) {
                         val endMs = System.currentTimeMillis()
                         val startMs = endMs - playbackStats.totalPlayTimeMs
                         try {
