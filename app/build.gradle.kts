@@ -197,6 +197,7 @@ android {
             )
         }
         debug {
+            buildConfigField("boolean", "GATEKEEPER_ENABLED", "false")
             applicationIdSuffix = ".debug"
             isDebuggable = true
         }
