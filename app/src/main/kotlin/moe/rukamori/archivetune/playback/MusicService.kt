@@ -2989,11 +2989,16 @@ class MusicService :
             }
             if (player.currentMediaItemIndex != targetIndex) return false
             if (player.playbackState != Player.STATE_READY || !player.isPlaying) {
-                crossfadeHandoffProgress = 0f
-                applyEffectiveVolume()
+                // The crossfade-completion seek can briefly flush/rebuffer the primary
+                // player's renderer. Previously this snapped the volume back to full via
+                // applyEffectiveVolume(), which is audible as a hiccup right as the new
+                // song starts. Instead, hold the fade at its current volumes (no snap) and
+                // resume the ramp from where it left off once the primary player recovers.
                 if (!awaitPrimaryPositionAdvance(targetIndex, lastConfirmedPrimaryPositionMs)) return false
                 lastConfirmedPrimaryPositionMs = player.currentPosition.coerceAtLeast(0L)
-                startedAtMs = android.os.SystemClock.elapsedRealtime()
+                val elapsedBeforeStallMs =
+                    (crossfadeHandoffProgress * CROSSFADE_HANDOFF_DURATION_MS.toFloat()).toLong()
+                startedAtMs = android.os.SystemClock.elapsedRealtime() - elapsedBeforeStallMs
                 continue
             }
 
@@ -8837,7 +8842,7 @@ class MusicService :
         const val CROSSFADE_HANDOFF_READY_TIMEOUT_MS = 5_000L
         const val CROSSFADE_HANDOFF_BUFFER_MS = 5_000L
         const val CROSSFADE_HANDOFF_SEEK_GUARD_MS = 750L
-        const val CROSSFADE_HANDOFF_MAX_DRIFT_MS = 75L
+        const val CROSSFADE_HANDOFF_MAX_DRIFT_MS = 200L
         const val CROSSFADE_HANDOFF_DURATION_MS = 96L
         const val CROSSFADE_HANDOFF_FRAME_MS = 8L
         const val CROSSFADE_HANDOFF_POLL_MS = 10L
