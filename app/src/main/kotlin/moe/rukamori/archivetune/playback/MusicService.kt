@@ -658,6 +658,7 @@ class MusicService :
     lateinit var downloadCache: Cache
 
     lateinit var localPlayer: ExoPlayer
+        private set
 
     // Ping-pong crossfade decks. Exactly one of these is "active" at any
     // time (== localPlayer, and == player for the foss/local-only flavor);
@@ -670,7 +671,7 @@ class MusicService :
     private lateinit var deckB: ExoPlayer
 
     private fun idleDeck(): ExoPlayer = if (localPlayer === deckA) deckB else deckA
-        private set
+
     lateinit var player: Player
         private set
     private lateinit var castPlaybackRepository: CastPlaybackRepository
@@ -1106,7 +1107,6 @@ class MusicService :
                 .build()
                 .apply {
                     addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
-                    addListener(audioEffectPlayerListener)
                     addListener(secondaryCrossfadeListener)
                     setOffloadEnabled(false)
                 }
@@ -1129,37 +1129,37 @@ class MusicService :
                 .build()
                 .apply {
                     addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
-                    addListener(audioEffectPlayerListener)
                     addListener(secondaryCrossfadeListener)
-                    addListener(this@MusicService)
                     setOffloadEnabled(false)
                     volume = 0f
                 }
         castPlaybackRepository = CastPlaybackRepositoryLocator.get(this)
         player =
-            castPlaybackRepository
-                .createPlayer(
-                    context = this,
-                    localPlayer = localPlayer,
-                    mediaItemResolver =
-                        object : CastMediaItemResolver {
-                            override fun resolveForCast(mediaItem: MediaItem): MediaItem =
-                                resolveMediaItemForCast(mediaItem)
+            DeckSwitchingPlayer(
+                castPlaybackRepository
+                    .createPlayer(
+                        context = this,
+                        localPlayer = localPlayer,
+                        mediaItemResolver =
+                            object : CastMediaItemResolver {
+                                override fun resolveForCast(mediaItem: MediaItem): MediaItem =
+                                    resolveMediaItemForCast(mediaItem)
 
-                            override fun mimeTypeForCast(mediaItem: MediaItem): String? =
-                                mediaItem.localConfiguration?.mimeType
-                                    ?.toCastMimeType()
-                                    ?: mediaItem.localConfiguration
-                                        ?.customCacheKey
-                                        ?.let(castMimeTypeCache::get)
-                                    ?: castMimeTypeCache.get(mediaItem.mediaId)
-                        },
-                ).apply {
-                    addListener(this@MusicService)
-                    sleepTimer = SleepTimer(scope, this, this@MusicService)
-                    addListener(sleepTimer)
-                    deckB.addListener(sleepTimer)
-                }
+                                override fun mimeTypeForCast(mediaItem: MediaItem): String? =
+                                    mediaItem.localConfiguration?.mimeType
+                                        ?.toCastMimeType()
+                                        ?: mediaItem.localConfiguration
+                                            ?.customCacheKey
+                                            ?.let(castMimeTypeCache::get)
+                                        ?: castMimeTypeCache.get(mediaItem.mediaId)
+                            },
+                    ),
+            ).apply {
+                addListener(this@MusicService)
+                addListener(audioEffectPlayerListener)
+                sleepTimer = SleepTimer(scope, this, this@MusicService)
+                addListener(sleepTimer)
+            }
         playerInitialized.value = true
         database
             .blockedArtistIds()
@@ -2910,9 +2910,15 @@ class MusicService :
         // simply promote it to be the app's canonical player. Because it
         // was never seeked or had its playlist mutated while audible,
         // there is no renderer flush and no audible glitch at this swap.
+        //
+        // Critically, `player` itself (the DeckSwitchingPlayer facade bound
+        // to MediaSession) is NEVER reassigned - only its internal delegate
+        // changes, via the officially supported ForwardingSimpleBasePlayer
+        // setPlayer() mechanism. MediaSession's own player reference stays
+        // untouched, which is what keeps the notification/session alive
+        // across the swap.
         localPlayer = incomingPlayer
-        player = incomingPlayer
-        runCatching { mediaSession.player = incomingPlayer }
+        (player as DeckSwitchingPlayer).switchTo(incomingPlayer)
         incomingPlayer.pauseAtEndOfMediaItems = false
         incomingPlayer.playWhenReady = shouldContinuePlayback
 
