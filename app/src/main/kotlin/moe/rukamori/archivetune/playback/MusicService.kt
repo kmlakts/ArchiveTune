@@ -658,6 +658,18 @@ class MusicService :
     lateinit var downloadCache: Cache
 
     lateinit var localPlayer: ExoPlayer
+
+    // Ping-pong crossfade decks. Exactly one of these is "active" at any
+    // time (== localPlayer, and == player for the foss/local-only flavor);
+    // the other is "idle" and can be freely seeked/prepared without any
+    // audible consequence. Crossfading hands off between them by swapping
+    // which one is active instead of seeking the currently-audible player,
+    // which avoids the ExoPlayer renderer flush that previously caused an
+    // audible hiccup right as the new song took over.
+    private lateinit var deckA: ExoPlayer
+    private lateinit var deckB: ExoPlayer
+
+    private fun idleDeck(): ExoPlayer = if (localPlayer === deckA) deckB else deckA
         private set
     lateinit var player: Player
         private set
@@ -1095,7 +1107,33 @@ class MusicService :
                 .apply {
                     addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
                     addListener(audioEffectPlayerListener)
+                    addListener(secondaryCrossfadeListener)
                     setOffloadEnabled(false)
+                }
+        deckA = localPlayer
+        deckB =
+            ExoPlayer
+                .Builder(this)
+                .setMediaSourceFactory(createMediaSourceFactory())
+                .setRenderersFactory(createRenderersFactory())
+                .setLoadControl(createPrimaryLoadControl())
+                .setTrackSelector(DefaultTrackSelector(this, SafeTrackSelectionFactory()))
+                .setHandleAudioBecomingNoisy(true)
+                .setWakeMode(C.WAKE_MODE_NETWORK)
+                .setAudioAttributes(
+                    playbackAudioAttributes(),
+                    false,
+                ).setSeekBackIncrementMs(5000)
+                .setSeekForwardIncrementMs(5000)
+                .setDeviceVolumeControlEnabled(true)
+                .build()
+                .apply {
+                    addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
+                    addListener(audioEffectPlayerListener)
+                    addListener(secondaryCrossfadeListener)
+                    addListener(this@MusicService)
+                    setOffloadEnabled(false)
+                    volume = 0f
                 }
         castPlaybackRepository = CastPlaybackRepositoryLocator.get(this)
         player =
@@ -1120,6 +1158,7 @@ class MusicService :
                     addListener(this@MusicService)
                     sleepTimer = SleepTimer(scope, this, this@MusicService)
                     addListener(sleepTimer)
+                    deckB.addListener(sleepTimer)
                 }
         playerInitialized.value = true
         database
@@ -2698,38 +2737,28 @@ class MusicService :
                 ?: return null
 
         return runCatching {
-            createSecondaryCrossfadePlayer().also { secondaryPlayer ->
-                secondaryCrossfadePlayer = secondaryPlayer
-                secondaryCrossfadeTarget = target
-                secondaryPlayer.setMediaItem(targetItem)
-                secondaryPlayer.playbackParameters = player.playbackParameters
-                secondaryPlayer.volume = 0f
-                secondaryPlayer.prepare()
-            }
+            // Mirror the FULL playlist onto the idle deck (not just the
+            // single upcoming item) so that once this deck is promoted to
+            // active at the end of the crossfade, it already has correct
+            // playlist/index state and needs no further seek. It is fully
+            // silent and un-audible at this point, so setMediaItems() here
+            // (which does internally flush/reprepare this deck) has no
+            // audible consequence.
+            val deck = idleDeck()
+            val fullPlaylist = (0 until player.mediaItemCount).map { player.getMediaItemAt(it) }
+            deck.volume = 0f
+            deck.setMediaItems(fullPlaylist, target.index, 0L)
+            deck.playbackParameters = player.playbackParameters
+            deck.skipSilenceEnabled = localPlayer.skipSilenceEnabled
+            deck.prepare()
+            secondaryCrossfadePlayer = deck
+            secondaryCrossfadeTarget = target
+            deck
         }.onFailure { error ->
             Timber.tag(TAG).w(error, "Failed to prepare crossfade player")
             releaseSecondaryCrossfadePlayer()
         }.getOrNull()
     }
-
-    private fun createSecondaryCrossfadePlayer(): ExoPlayer =
-        ExoPlayer
-            .Builder(this)
-            .setMediaSourceFactory(createMediaSourceFactory())
-            .setRenderersFactory(createRenderersFactory())
-            .setLoadControl(createCrossfadeLoadControl())
-            .setTrackSelector(DefaultTrackSelector(this, SafeTrackSelectionFactory()))
-            .setHandleAudioBecomingNoisy(false)
-            .setWakeMode(C.WAKE_MODE_NETWORK)
-            .setAudioAttributes(playbackAudioAttributes(), false)
-            .setSeekBackIncrementMs(5000)
-            .setSeekForwardIncrementMs(5000)
-            .build()
-            .apply {
-                addListener(secondaryCrossfadeListener)
-                setOffloadEnabled(false)
-                skipSilenceEnabled = localPlayer.skipSilenceEnabled
-            }
 
     private fun startCrossfade(
         target: CrossfadeTarget,
@@ -2872,60 +2901,27 @@ class MusicService :
             return
         }
 
-        val incomingPosition = incomingPlayer.currentPosition.coerceAtLeast(0L)
         val shouldContinuePlayback = crossfadePlaybackRequested
+        val outgoingPlayer = localPlayer
 
-        var handoffCompleted = false
-        try {
-            crossfadeHandoffInProgress = true
-            crossfadeHandoffProgress = 0f
-            localPlayer.pauseAtEndOfMediaItems = false
-            player.volume = 0f
-            player.seekTo(targetIndex, incomingPosition)
-            player.playWhenReady = shouldContinuePlayback
-            if (shouldContinuePlayback) {
-                if (!awaitPrimaryCrossfadeHandoffReady(incomingPlayer)) {
-                    abortCrossfadeAndResumePrimary("primary_handoff_not_ready")
-                    handoffCompleted = true
-                    return
-                }
+        // incomingPlayer already holds the full mirrored playlist and has
+        // been playing forward from targetIndex/position 0 since the start
+        // of the crossfade, so there is nothing left to seek here - we
+        // simply promote it to be the app's canonical player. Because it
+        // was never seeked or had its playlist mutated while audible,
+        // there is no renderer flush and no audible glitch at this swap.
+        localPlayer = incomingPlayer
+        player = incomingPlayer
+        runCatching { mediaSession.player = incomingPlayer }
+        incomingPlayer.pauseAtEndOfMediaItems = false
+        incomingPlayer.playWhenReady = shouldContinuePlayback
 
-                val primaryPosition = player.currentPosition.coerceAtLeast(0L)
-                val secondaryPosition = incomingPlayer.currentPosition.coerceAtLeast(0L)
-                if (needsCorrectiveCrossfadeSeek(
-                        primaryPositionMs = primaryPosition,
-                        secondaryPositionMs = secondaryPosition,
-                        maximumDriftMs = CROSSFADE_HANDOFF_MAX_DRIFT_MS,
-                    )
-                ) {
-                    player.seekTo(targetIndex, secondaryPosition)
-                }
+        // The deck that was active is now idle: mute and pause it so it is
+        // ready to be prepared for the *next* upcoming crossfade.
+        outgoingPlayer.volume = 0f
+        runCatching { outgoingPlayer.pause() }
 
-                if (!performCrossfadeHandoff(targetIndex, incomingPlayer)) {
-                    if (crossfadePlaybackRequested && player.currentMediaItemIndex == targetIndex) {
-                        abortCrossfadeAndResumePrimary("primary_handoff_failed")
-                    } else {
-                        cancelCrossfade(resetVolume = true, resetPauseAtEnd = true)
-                    }
-                    handoffCompleted = true
-                    return
-                }
-            } else {
-                incomingPlayer.pause()
-            }
-            currentMediaMetadata.value = player.getMediaItemAt(targetIndex).metadata
-            handoffCompleted = true
-        } finally {
-            if (!handoffCompleted) {
-                crossfadeHandoffInProgress = false
-                crossfadeHandoffProgress = 0f
-                isCrossfading = false
-                crossfadeProgress = 0f
-                crossfadePlaybackRequested = false
-                releaseSecondaryCrossfadePlayer()
-                applyEffectiveVolumeImmediately()
-            }
-        }
+        currentMediaMetadata.value = incomingPlayer.getMediaItemAt(targetIndex).metadata
 
         isCrossfading = false
         crossfadeHandoffInProgress = false
@@ -2933,109 +2929,13 @@ class MusicService :
         crossfadeProgress = 0f
         crossfadeIncomingBaseVolume = 1f
         crossfadePlaybackRequested = false
-        releaseSecondaryCrossfadePlayer()
+        // The deck we just promoted IS incomingPlayer/localPlayer now, so
+        // just clear the pointer without touching the deck itself.
+        secondaryCrossfadePlayer = null
+        secondaryCrossfadeTarget = null
         applyEffectiveVolumeImmediately()
         updateAudiblePlaybackRecovery()
         scheduleCrossfade()
-    }
-
-    private suspend fun awaitPrimaryCrossfadeHandoffReady(incomingPlayer: ExoPlayer): Boolean {
-        val deadlineMs = android.os.SystemClock.elapsedRealtime() + CROSSFADE_HANDOFF_READY_TIMEOUT_MS
-        while (kotlinx.coroutines.currentCoroutineContext().isActive && android.os.SystemClock.elapsedRealtime() < deadlineMs) {
-            if (player.playbackState == Player.STATE_READY && canHandoffWithoutRebuffer(incomingPlayer)) {
-                return true
-            }
-            if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) {
-                return false
-            }
-            delay(25L)
-        }
-        return player.playbackState == Player.STATE_READY && canHandoffWithoutRebuffer(incomingPlayer)
-    }
-
-    private suspend fun awaitPrimaryPositionAdvance(
-        targetIndex: Int,
-        positionAfterSeekMs: Long,
-    ): Boolean {
-        val deadlineMs = android.os.SystemClock.elapsedRealtime() + CROSSFADE_HANDOFF_READY_TIMEOUT_MS
-        while (kotlinx.coroutines.currentCoroutineContext().isActive && android.os.SystemClock.elapsedRealtime() < deadlineMs) {
-            if (!crossfadePlaybackRequested || !player.playWhenReady) return false
-            if (player.currentMediaItemIndex != targetIndex) return false
-            if (player.playbackState == Player.STATE_IDLE || player.playbackState == Player.STATE_ENDED) return false
-            if (player.playbackState == Player.STATE_READY &&
-                player.isPlaying &&
-                hasPlaybackPositionAdvanced(positionAfterSeekMs, player.currentPosition)
-            ) {
-                return true
-            }
-            delay(CROSSFADE_HANDOFF_POLL_MS)
-        }
-        return player.currentMediaItemIndex == targetIndex &&
-            player.playbackState == Player.STATE_READY &&
-            player.isPlaying &&
-            hasPlaybackPositionAdvanced(positionAfterSeekMs, player.currentPosition)
-    }
-
-    private suspend fun performCrossfadeHandoff(
-        targetIndex: Int,
-        incomingPlayer: ExoPlayer,
-    ): Boolean {
-        var startedAtMs = android.os.SystemClock.elapsedRealtime()
-        var lastConfirmedPrimaryPositionMs = player.currentPosition.coerceAtLeast(0L)
-        while (kotlinx.coroutines.currentCoroutineContext().isActive) {
-            if (!crossfadePlaybackRequested || !player.playWhenReady) {
-                incomingPlayer.pause()
-                return false
-            }
-            if (player.currentMediaItemIndex != targetIndex) return false
-            if (player.playbackState != Player.STATE_READY || !player.isPlaying) {
-                // The crossfade-completion seek can briefly flush/rebuffer the primary
-                // player's renderer. Previously this snapped the volume back to full via
-                // applyEffectiveVolume(), which is audible as a hiccup right as the new
-                // song starts. Instead, hold the fade at its current volumes (no snap) and
-                // resume the ramp from where it left off once the primary player recovers.
-                if (!awaitPrimaryPositionAdvance(targetIndex, lastConfirmedPrimaryPositionMs)) return false
-                lastConfirmedPrimaryPositionMs = player.currentPosition.coerceAtLeast(0L)
-                val elapsedBeforeStallMs =
-                    (crossfadeHandoffProgress * CROSSFADE_HANDOFF_DURATION_MS.toFloat()).toLong()
-                startedAtMs = android.os.SystemClock.elapsedRealtime() - elapsedBeforeStallMs
-                continue
-            }
-
-            val elapsedMs = android.os.SystemClock.elapsedRealtime() - startedAtMs
-            crossfadeHandoffProgress =
-                (elapsedMs.toFloat() / CROSSFADE_HANDOFF_DURATION_MS.toFloat()).coerceIn(0f, 1f)
-            val handoffBaseVolume =
-                secondaryCrossfadeTarget?.let { currentEffectivePlayerVolumeForMediaId(it.mediaId) }
-                    ?: crossfadeIncomingBaseVolume
-            applyCrossfadeVolumes(
-                crossfadeHandoffProgress,
-                handoffBaseVolume,
-                handoffBaseVolume,
-                incomingPlayer,
-                localPlayer,
-            )
-            if (crossfadeHandoffProgress >= 1f) return true
-            delay(CROSSFADE_HANDOFF_FRAME_MS)
-        }
-        return false
-    }
-
-    private fun canHandoffWithoutRebuffer(incomingPlayer: ExoPlayer): Boolean {
-        if (player.currentMediaItem
-                ?.localConfiguration
-                ?.uri
-                ?.shouldBypassPlayerCache() == true
-        ) {
-            return true
-        }
-        if (hasBufferedForSmoothStart(localPlayer, CROSSFADE_HANDOFF_BUFFER_MS)) {
-            val bufferedPosition = localPlayer.bufferedPosition
-            val incomingPosition = incomingPlayer.currentPosition.coerceAtLeast(0L)
-            return bufferedPosition == C.TIME_UNSET ||
-                incomingPosition + CROSSFADE_HANDOFF_SEEK_GUARD_MS <= bufferedPosition
-        }
-        return false
     }
 
     private fun requiredCrossfadeStartBufferMs(durationMs: Long): Long =
@@ -3139,10 +3039,13 @@ class MusicService :
         val playerToRelease = secondaryCrossfadePlayer ?: return
         secondaryCrossfadePlayer = null
         secondaryCrossfadeTarget = null
-        runCatching { playerToRelease.removeListener(secondaryCrossfadeListener) }
-        runCatching { playerToRelease.stop() }
-        runCatching { playerToRelease.clearMediaItems() }
-        runCatching { playerToRelease.release() }
+        // Decks are permanent (deckA/deckB) and reused for every crossfade,
+        // never destroyed here. If this deck was already promoted to
+        // active (localPlayer) by a successful finishCrossfade() before
+        // this cleanup ran, leave it completely alone.
+        if (playerToRelease === localPlayer) return
+        runCatching { playerToRelease.pause() }
+        runCatching { playerToRelease.volume = 0f }
     }
 
     private fun calculateAudioNormalizationFactor(
@@ -8839,13 +8742,12 @@ class MusicService :
         const val CROSSFADE_END_GUARD_MS = 150L
         const val CROSSFADE_PREPARE_AHEAD_MS = 30_000L
         const val CROSSFADE_READY_TIMEOUT_MS = 5_000L
-        const val CROSSFADE_HANDOFF_READY_TIMEOUT_MS = 5_000L
+        // Only the buffer-ahead constant is still used (by
+        // requiredCrossfadeStartBufferMs); the seek-guard/drift/handoff
+        // timing constants that used to govern the seek-and-micro-fade
+        // handoff are gone along with that mechanism now that handoff is
+        // an instant deck swap instead.
         const val CROSSFADE_HANDOFF_BUFFER_MS = 5_000L
-        const val CROSSFADE_HANDOFF_SEEK_GUARD_MS = 750L
-        const val CROSSFADE_HANDOFF_MAX_DRIFT_MS = 200L
-        const val CROSSFADE_HANDOFF_DURATION_MS = 96L
-        const val CROSSFADE_HANDOFF_FRAME_MS = 8L
-        const val CROSSFADE_HANDOFF_POLL_MS = 10L
         const val CROSSFADE_MIN_BUFFER_BEFORE_START_MS = 5_000L
         const val CROSSFADE_MAX_BUFFER_BEFORE_START_MS = 12_500L
         const val PRIMARY_MIN_BUFFER_MS = 20_000
