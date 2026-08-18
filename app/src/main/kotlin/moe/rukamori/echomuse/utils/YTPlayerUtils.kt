@@ -458,7 +458,7 @@ object YTPlayerUtils {
         videoId: String,
         clientKey: String?,
         httpStatusCode: Int?,
-        authFingerprint: String = YouTube.currentPlaybackAuthState().fingerprint,
+        authFingerprint: String = YouTube.currentPlaybackAuthState().streamCacheFingerprint,
     ) {
         if (httpStatusCode != null && httpStatusCode !in RETRYABLE_STREAM_RESPONSE_CODES) return
         val normalizedClientKey = normalizeStreamClientKey(clientKey)
@@ -471,7 +471,7 @@ object YTPlayerUtils {
         videoId: String,
         client: PlayerStreamClient,
         httpStatusCode: Int?,
-        authFingerprint: String = YouTube.currentPlaybackAuthState().fingerprint,
+        authFingerprint: String = YouTube.currentPlaybackAuthState().streamCacheFingerprint,
     ) {
         markStreamClientFailed(videoId, client.name, httpStatusCode, authFingerprint)
     }
@@ -605,7 +605,7 @@ object YTPlayerUtils {
                 videoId = videoId,
                 audioQuality = audioQuality,
                 networkMetered = isMetered,
-                authFingerprint = YouTube.currentPlaybackAuthState().fingerprint,
+                authFingerprint = YouTube.currentPlaybackAuthState().streamCacheFingerprint,
             )
         getCachedPlaybackData(initialKey)?.let { return Result.success(it) }
         val resolutionMutex =
@@ -616,7 +616,7 @@ object YTPlayerUtils {
                     videoId = videoId,
                     audioQuality = audioQuality,
                     networkMetered = isMetered,
-                    authFingerprint = YouTube.currentPlaybackAuthState().fingerprint,
+                    authFingerprint = YouTube.currentPlaybackAuthState().streamCacheFingerprint,
                 )
             getCachedPlaybackData(currentKey)?.let { return@withLock Result.success(it) }
             resolvePlaybackData(
@@ -981,7 +981,7 @@ object YTPlayerUtils {
                     isStreamClientTemporarilyBlocked(
                         videoId = videoId,
                         clientKey = StreamClientUtils.buildClientKey(client),
-                        authFingerprint = authState.fingerprint,
+                        authFingerprint = authState.streamCacheFingerprint,
                     )
                 if (blocked) {
                     Timber.tag(logTag).w("Temporarily blocked stream client for $videoId: ${describeClient(client)}")
@@ -1134,7 +1134,7 @@ object YTPlayerUtils {
                             videoId = videoId,
                             clientKey = StreamClientUtils.buildClientKey(client),
                             httpStatusCode = null,
-                            authFingerprint = authState.fingerprint,
+                            authFingerprint = authState.streamCacheFingerprint,
                         )
                         Timber.tag(logTag).v(
                             "Skipping visitor-only client %s because it rejected anonymous playback",
@@ -1181,7 +1181,7 @@ object YTPlayerUtils {
             for (candidate in candidates) {
                 if (canUseLoggedInPlayback && expectedDurationMs != null && isLikelyPreview(candidate, expectedDurationMs)) continue
                 if (shouldSkipCipheredWebCandidate(client, candidate, videoId, authState)) continue
-                val cacheKey = buildStreamCacheKey(videoId, candidate.itag, client, authState.fingerprint)
+                val cacheKey = buildStreamCacheKey(videoId, candidate.itag, client, authState.streamCacheFingerprint)
                 val cached = streamUrlCache[cacheKey]
                 val candidateResult =
                     if (cached != null && cached.expiresAtMs > System.currentTimeMillis() + STREAM_URL_EXPIRY_SAFETY_MS) {
@@ -1202,7 +1202,7 @@ object YTPlayerUtils {
                             videoId = videoId,
                             clientKey = StreamClientUtils.buildClientKey(client),
                             httpStatusCode = null,
-                            authFingerprint = authState.fingerprint,
+                            authFingerprint = authState.streamCacheFingerprint,
                         )
                         break
                     }
@@ -1318,11 +1318,11 @@ object YTPlayerUtils {
                 "No resolved stream client for validated playback URL"
             }
 
-        streamUrlCache[buildStreamCacheKey(videoId, format.itag, resolvedStreamClient, authState.fingerprint)] =
+        streamUrlCache[buildStreamCacheKey(videoId, format.itag, resolvedStreamClient, authState.streamCacheFingerprint)] =
             CachedStreamUrl(
                 url = streamUrl,
                 expiresAtMs = System.currentTimeMillis() + (streamExpiresInSeconds * 1000L),
-                authFingerprint = authState.fingerprint,
+                authFingerprint = authState.streamCacheFingerprint,
             )
 
         return PlaybackData(
@@ -1332,7 +1332,7 @@ object YTPlayerUtils {
             format,
             streamUrl,
             streamExpiresInSeconds,
-            authState.fingerprint,
+            authState.streamCacheFingerprint,
         )
     }
 

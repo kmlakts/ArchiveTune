@@ -3582,7 +3582,7 @@ class MusicService :
 
         val failedUrl = responseException.dataSpec.uri.toString()
         val requestProfile = StreamClientUtils.resolveRequestProfile(failedUrl)
-        val authFingerprint = YouTube.currentPlaybackAuthState().fingerprint
+        val authFingerprint = YouTube.currentPlaybackAuthState().streamCacheFingerprint
         val extractorAuthFingerprint = EchomuseExtractorCacheFingerprintPrefix + authFingerprint
         val cachedFailedUrl = playbackUrlCache[mediaId]?.takeIf { it.url == failedUrl }
         val cachedExtractorFailedUrl = extractorPlaybackUrlCache[mediaId]?.takeIf { it.url == failedUrl }
@@ -7484,16 +7484,22 @@ class MusicService :
      * just produced instead of redoing a full resolution (which, for local playback, can
      * include a multi-second BotGuard PO token mint).
      *
-     * Deliberately not gated on [YouTube.currentPlaybackAuthState]'s fingerprint: that state
-     * is a single global object mutated by every PO token mint, for any video, so it churns
-     * on essentially every resolution and would make a fingerprint-matched check here almost
-     * never hit. The short TTL plus explicit invalidation on a confirmed-bad URL (see
-     * [invalidateResolvedStreamUrl]) are what keep this safe instead.
+     * Gated on [PlaybackAuthState.streamCacheFingerprint], not the full
+     * [PlaybackAuthState.fingerprint]: the latter is a single global object mutated by every
+     * PO token mint, for any video, so it churns on essentially every resolution and would
+     * make a fingerprint-matched check here almost never hit. streamCacheFingerprint only
+     * reflects account identity (cookie/visitorData/dataSyncId), which is what actually
+     * matters for "is this cached stream URL still from the same session."
      */
-    private fun cachedResolvedStreamUrl(mediaId: String): String? =
+    private fun cachedResolvedStreamUrl(
+        mediaId: String,
+        authFingerprint: String,
+    ): String? =
         resolvedStreamCache[mediaId]
-            ?.takeIf { System.currentTimeMillis() - it.resolvedAtMs < RESOLVED_STREAM_CACHE_TTL_MS }
-            ?.url
+            ?.takeIf {
+                it.authFingerprint == authFingerprint &&
+                    System.currentTimeMillis() - it.resolvedAtMs < RESOLVED_STREAM_CACHE_TTL_MS
+            }?.url
 
     private fun cacheResolvedStreamUrl(
         mediaId: String,
@@ -7612,11 +7618,11 @@ class MusicService :
         }
 
         val lowDataModeActive = isLowDataModeActive()
-        val authFingerprint = YouTube.currentPlaybackAuthState().fingerprint
+        val authFingerprint = YouTube.currentPlaybackAuthState().streamCacheFingerprint
 
         // Reuse whatever any path (primary, extractor, or crossfade secondary) resolved for
         // this video ID moments ago, instead of redoing a full resolution here.
-        cachedResolvedStreamUrl(mediaId)?.let { cachedUrl ->
+        cachedResolvedStreamUrl(mediaId, authFingerprint)?.let { cachedUrl ->
             scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
             val resolvedDataSpec = dataSpec.withUri(cachedUrl.toUri())
             val length =
@@ -7861,7 +7867,7 @@ class MusicService :
         mediaId: String,
     ): DataSpec {
         val authState = YouTube.currentPlaybackAuthState()
-        val authFingerprint = EchomuseExtractorCacheFingerprintPrefix + authState.fingerprint
+        val authFingerprint = EchomuseExtractorCacheFingerprintPrefix + authState.streamCacheFingerprint
         extractorPlaybackUrlCache[mediaId]
             ?.takeIf {
                 it.isValidFor(
