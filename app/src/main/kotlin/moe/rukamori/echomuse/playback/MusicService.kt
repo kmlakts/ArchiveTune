@@ -2651,8 +2651,14 @@ class MusicService :
 
                     val remainingToTrigger = triggerAt - player.currentPosition
                     if (!hasPreparedSecondaryPlayer && remainingToTrigger <= CROSSFADE_PREPARE_AHEAD_MS) {
-                        prepareSecondaryCrossfadePlayer(target)
-                        hasPreparedSecondaryPlayer = true
+                        // Only mark as prepared on actual success. A failed attempt (e.g. a
+                        // transient resolution error) must not permanently give up on this
+                        // trigger job's prepare-ahead window - retry on the next poll tick
+                        // instead of silently relying on startCrossfade's much shorter
+                        // trigger-point timeout to be the only remaining chance.
+                        if (prepareSecondaryCrossfadePlayer(target) != null) {
+                            hasPreparedSecondaryPlayer = true
+                        }
                     }
                     if (remainingToTrigger <= 0L) {
                         val adjustedDuration =
@@ -8925,8 +8931,14 @@ class MusicService :
         const val EFFECTIVE_VOLUME_RAMP_MIN_DELTA = 0.015f
         const val MIN_CROSSFADE_DURATION_MS = 500L
         const val CROSSFADE_END_GUARD_MS = 150L
-        const val CROSSFADE_PREPARE_AHEAD_MS = 30_000L
-        const val CROSSFADE_READY_TIMEOUT_MS = 5_000L
+        // Widened from 30s/5s based on measured resolution-cascade durations across a
+        // logging session on 2026-08-18 (n=31 clean single-cascade resolutions: median
+        // 13.2s, p75 14.4s, p90 32.0s, max 35.9s - the old 30s prepare-ahead window sat
+        // right at the p90 mark, before even accounting for buffering time or the
+        // trigger-point timeout). These give real margin above the observed max instead
+        // of being tuned to it exactly.
+        const val CROSSFADE_PREPARE_AHEAD_MS = 45_000L
+        const val CROSSFADE_READY_TIMEOUT_MS = 10_000L
         // Only the buffer-ahead constant is still used (by
         // requiredCrossfadeStartBufferMs); the seek-guard/drift/handoff
         // timing constants that used to govern the seek-and-micro-fade
