@@ -58,11 +58,11 @@ val hasReleaseSigningConfig =
         releaseKeyAlias != null &&
         releaseKeyPassword != null
 android {
-    namespace = "moe.rukamori.archivetune"
+    namespace = "moe.rukamori.echomuse"
     compileSdk = 37
 
     defaultConfig {
-    applicationId = "moe.rukamori.archivetune"
+    applicationId = "moe.rukamori.echomuse"
         minSdk = 26
         targetSdk = 37
         versionCode = 140
@@ -112,7 +112,7 @@ android {
                 ).trim()
         buildConfigField("String", "NIGHTLY_BUILD_HASH", "\"$nightlyBuildHash\"")
         buildConfigField("String", "DISTRIBUTION", "\"gms\"")
-        buildConfigField("boolean", "UPDATER_AVAILABLE", "true")
+        buildConfigField("boolean", "UPDATER_AVAILABLE", "false")
     }
 
     flavorDimensions += listOf("distribution", "device", "abi")
@@ -121,7 +121,7 @@ android {
             dimension = "distribution"
             isDefault = true
             buildConfigField("String", "DISTRIBUTION", "\"gms\"")
-            buildConfigField("boolean", "UPDATER_AVAILABLE", "true")
+            buildConfigField("boolean", "UPDATER_AVAILABLE", "false")
             buildConfigField("String", "DISCORD_APPLICATION_ID", "\"$discordApplicationId\"")
             buildConfigField("long", "DISCORD_APPLICATION_ID_LONG", "${discordApplicationIdLong}L")
             buildConfigField("String", "DISCORD_REDIRECT_SCHEME", "\"$discordRedirectScheme\"")
@@ -130,7 +130,7 @@ android {
         create("foss") {
             dimension = "distribution"
             buildConfigField("String", "DISTRIBUTION", "\"foss\"")
-            buildConfigField("boolean", "UPDATER_AVAILABLE", "true")
+            buildConfigField("boolean", "UPDATER_AVAILABLE", "false")
             buildConfigField("String", "DISCORD_APPLICATION_ID", "\"$discordApplicationId\"")
             buildConfigField("long", "DISCORD_APPLICATION_ID_LONG", "${discordApplicationIdLong}L")
             buildConfigField("String", "DISCORD_REDIRECT_SCHEME", "\"$discordRedirectScheme\"")
@@ -382,7 +382,7 @@ androidComponents {
                 metadataFile.set(rootProject.layout.projectDirectory.file("IconPack/metadata.json"))
                 svgDirectory.set(rootProject.layout.projectDirectory.dir("IconPack/svg"))
                 applicationId.set(variant.applicationId)
-                targetActivityClassName.set("moe.rukamori.archivetune.MainActivity")
+                targetActivityClassName.set("moe.rukamori.echomuse.MainActivity")
                 resourceOutputDirectory.set(
                     layout.buildDirectory.dir("generated/iconPack/${variant.name}/res"),
                 )

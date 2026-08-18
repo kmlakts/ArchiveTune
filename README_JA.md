@@ -1,8 +1,8 @@
 <div align="center">
 
-  <img src="https://github.com/rukamori/ArchiveTune/blob/main/fastlane/metadata/android/en-US/images/icon.png" width="160" height="160" alt="ArchiveTune Logo" style="border-radius: 22%">
+  <img src="https://github.com/rukamori/ArchiveTune/blob/main/fastlane/metadata/android/en-US/images/icon.png" width="160" height="160" alt="Echomuse Logo" style="border-radius: 22%">
 
-  <h1>ArchiveTune</h1>
+  <h1>Echomuse</h1>
 
   <p align="center">
     <a href="README.md">
@@ -29,10 +29,10 @@
   </p>
 
   <div align="center">
-    <img src="https://img.shields.io/github/v/release/archivetuneapp/ArchiveTune?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="最新バージョン" />
-    <img src="https://img.shields.io/github/downloads/archivetuneapp/ArchiveTune/total?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="ダウンロード数" />
-    <img src="https://img.shields.io/github/stars/archivetuneapp/ArchiveTune?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="スター数" />
-    <img src="https://img.shields.io/github/license/archivetuneapp/ArchiveTune?style=for-the-badge&color=6366f1&labelColor=1e1e2e" alt="ライセンス" />
+    <img src="https://img.shields.io/github/v/release/echomuseapp/Echomuse?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="最新バージョン" />
+    <img src="https://img.shields.io/github/downloads/echomuseapp/Echomuse/total?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="ダウンロード数" />
+    <img src="https://img.shields.io/github/stars/echomuseapp/Echomuse?style=for-the-badge&color=6366f1&labelColor=1e1e2e&logo=github" alt="スター数" />
+    <img src="https://img.shields.io/github/license/echomuseapp/Echomuse?style=for-the-badge&color=6366f1&labelColor=1e1e2e" alt="ライセンス" />
     <img src="https://img.shields.io/badge/Architecture-MVVM-6366f1?style=for-the-badge&labelColor=1e1e2e&logo=kotlin" alt="MVVMアーキテクチャ" />
     <img src="https://img.shields.io/badge/Language-Kotlin-7f52ff?style=for-the-badge&logo=kotlin&color=6366f1&labelColor=1e1e2e" alt="Kotlin言語" />
     <img src="https://img.shields.io/badge/Toolkit-Jetpack_Compose-4285f4?style=for-the-badge&logo=jetpack-compose&color=6366f1&labelColor=1e1e2e" alt="Jetpack Compose" />
@@ -45,13 +45,13 @@
   <br />
 
   <a href="https://trendshift.io/repositories/17521" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/17521" alt="ArchiveTune | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+    <img src="https://trendshift.io/api/badge/repositories/17521" alt="Echomuse | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
   </a>
 </div>
 
 <hr />
 
-**ArchiveTune** は単なるYouTube Musicのラッパーアプリではありません。ゼロから構築された完全カスタムの音楽プレイヤーです。音楽はプライベートであるべき、美しくあるべき、そして思い通りに動くべきだと私たちは考えています。音質にこだわり、快適な操作体験を求めるなら、これが最適です。
+**Echomuse** は単なるYouTube Musicのラッパーアプリではありません。ゼロから構築された完全カスタムの音楽プレイヤーです。音楽はプライベートであるべき、美しくあるべき、そして思い通りに動くべきだと私たちは考えています。音質にこだわり、快適な操作体験を求めるなら、これが最適です。
 
 ---
 
@@ -179,7 +179,7 @@ Telegramチャンネルに参加してサポートやディスカッションに
 
 ## 🌍 グローバリゼーション
 
-ArchiveTuneは誰のものでもあります。あなたの地域向けにローカライズを手伝ってください。
+Echomuseは誰のものでもあります。あなたの地域向けにローカライズを手伝ってください。
 
 ---
 
@@ -189,13 +189,13 @@ ArchiveTuneは誰のものでもあります。あなたの地域向けにロー
 ---
 
 ### 🛠️ 開発 & エンジニアリング
-プロジェクトのビルドや貢献に興味がありますか？ArchiveTuneは高性能なKotlinスタックで構築されています。  
+プロジェクトのビルドや貢献に興味がありますか？Echomuseは高性能なKotlinスタックで構築されています。  
 <a href="CONTRIBUTING.md"><b>ビルドと貢献ガイドを見る →</b></a>
 
 ---
 
 ### ⭐ プロジェクトを支援
-ArchiveTuneは無料かつオープンソースです。気に入ったら開発支援をご検討ください！
+Echomuseは無料かつオープンソースです。気に入ったら開発支援をご検討ください！
 
 ---
 
@@ -214,7 +214,7 @@ ArchiveTuneは無料かつオープンソースです。気に入ったら開発
 
 ## ⚖️ 法的免責事項
 
-ArchiveTuneは独立したサードパーティクライアントです。
+Echomuseは独立したサードパーティクライアントです。
 
 - Google LLC および YouTube とは無関係です  
 - YouTubeの技術的保護を回避するものではありません  
@@ -223,8 +223,8 @@ ArchiveTuneは独立したサードパーティクライアントです。
 ---
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/archivetuneapp/ArchiveTune/refs/heads/dev/fastlane/metadata/android/en-US/images/ArchiveTuneFull.png" alt="ArchiveTune Banner" style="width: 100%; max-width: 500px;">
-  <p><b>ArchiveTuneで音楽体験が向上したなら、ぜひ⭐をお願いします</b></p>
+  <img src="https://raw.githubusercontent.com/echomuseapp/Echomuse/refs/heads/dev/fastlane/metadata/android/en-US/images/EchomuseFull.png" alt="Echomuse Banner" style="width: 100%; max-width: 500px;">
+  <p><b>Echomuseで音楽体験が向上したなら、ぜひ⭐をお願いします</b></p>
   <br />
-  <img src="https://raw.githubusercontent.com/archivetuneapp/ArchiveTune/refs/heads/dev/assets/badge_part.png" alt="ArchiveTune Banner" style="width: 160px">
+  <img src="https://raw.githubusercontent.com/echomuseapp/Echomuse/refs/heads/dev/assets/badge_part.png" alt="Echomuse Banner" style="width: 160px">
 </div>
