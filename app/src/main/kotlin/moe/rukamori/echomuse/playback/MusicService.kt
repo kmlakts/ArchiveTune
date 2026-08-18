@@ -274,6 +274,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.time.LocalDateTime
 import java.util.Locale
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
@@ -370,6 +371,9 @@ class MusicService :
     )
     private val playbackUrlCache = ConcurrentHashMap<String, AuthScopedCacheValue>()
     private val extractorPlaybackUrlCache = ConcurrentHashMap<String, AuthScopedCacheValue>()
+    private val extractorBypassMediaIds: MutableSet<String> = Collections.newSetFromMap(ConcurrentHashMap())
+    private val resolvedStreamCache = ConcurrentHashMap<String, ResolvedStreamEntry>()
+    private val resolutionBackoff = ConcurrentHashMap<String, ResolutionBackoffState>()
     private val remotePlaybackTrackingUrlCache = ConcurrentHashMap<String, String>()
     private val contentLengthCache = ConcurrentHashMap<String, Long>()
     private val castMimeTypeCache = LruCache<String, String>(128)
@@ -561,6 +565,17 @@ class MusicService :
     private data class CrossfadeTarget(
         val index: Int,
         val mediaId: String,
+    )
+
+    private data class ResolvedStreamEntry(
+        val url: String,
+        val resolvedAtMs: Long,
+        val authFingerprint: String,
+    )
+
+    private data class ResolutionBackoffState(
+        val consecutiveFailures: Int,
+        val nextAllowedAttemptAtMs: Long,
     )
 
     private data class PlaybackRecoverySnapshot(
@@ -2600,14 +2615,6 @@ class MusicService :
         }
 
         val currentMediaId = player.currentMediaItem?.mediaId ?: return
-        if (crossfadeSuppressedMediaId == currentMediaId) {
-            localPlayer.pauseAtEndOfMediaItems = false
-            releaseSecondaryCrossfadePlayer()
-            return
-        }
-        if (crossfadeSuppressedMediaId != null) {
-            crossfadeSuppressedMediaId = null
-        }
 
         val target = resolveCrossfadeTarget()
         val duration = player.duration
@@ -2616,6 +2623,15 @@ class MusicService :
             localPlayer.pauseAtEndOfMediaItems = false
             releaseSecondaryCrossfadePlayer()
             return
+        }
+
+        if (crossfadeSuppressedMediaId == target.mediaId) {
+            localPlayer.pauseAtEndOfMediaItems = false
+            releaseSecondaryCrossfadePlayer()
+            return
+        }
+        if (crossfadeSuppressedMediaId != null) {
+            crossfadeSuppressedMediaId = null
         }
 
         val currentIndex = player.currentMediaItemIndex
@@ -3021,14 +3037,16 @@ class MusicService :
     private fun abortCrossfadeAndResumePrimary(reason: String) {
         if (!::player.isInitialized) return
 
-        val currentMediaId = player.currentMediaItem?.mediaId
         val targetIndex = secondaryCrossfadeTarget?.let(::resolveCrossfadeTargetIndex) ?: C.INDEX_UNSET
         val shouldResumePlayback = crossfadePlaybackRequested || player.playWhenReady
         val primaryAtEnd =
             player.playbackState == Player.STATE_ENDED ||
                 (player.duration != C.TIME_UNSET && player.currentPosition >= player.duration)
 
-        crossfadeSuppressedMediaId = currentMediaId
+        // Suppress by the TARGET's media ID, not the primary's current one: the primary's
+        // current media ID can itself change right below (seekTo the target on primaryAtEnd),
+        // which would otherwise immediately un-suppress a target that just failed.
+        crossfadeSuppressedMediaId = secondaryCrossfadeTarget?.mediaId
 
         Timber.tag(TAG).w("Falling back to primary playback after crossfade failure: reason=%s", reason)
         cancelCrossfade(resetVolume = true, resetPauseAtEnd = true)
@@ -3590,6 +3608,8 @@ class MusicService :
         playbackUrlCache.remove(mediaId)
         extractorPlaybackUrlCache.remove(mediaId)
         YTPlayerUtils.invalidateCachedStreamUrls(mediaId)
+        invalidateResolvedStreamUrl(mediaId, failedUrl)
+        recordResolutionFailure(mediaId)
         if (!failedExpiredUrl && cachedExtractorFailedUrl == null && requestProfile.clientKey.isNotEmpty()) {
             YTPlayerUtils.markStreamClientFailed(mediaId, requestProfile.clientKey, responseException.responseCode)
         }
@@ -3675,6 +3695,34 @@ class MusicService :
         return true
     }
 
+    /**
+     * The Echomuse extractor backend is a shared, remote service this app doesn't control. When it
+     * hands back a stream URL that YouTube itself then rejects (403) or its own auth is stale (401),
+     * retrying the same backend just reproduces the failure. Instead, bypass it for this song and
+     * retry playback via the local Innertube + MoriCipherRuntime resolution path, which does its own
+     * on-device signature/n-parameter deciphering and doesn't depend on that backend at all.
+     */
+    private fun fallBackToLocalExtractionAfterExtractorFailure(
+        mediaId: String,
+        failedUrl: String? = null,
+    ): Boolean {
+        val recoverySnapshot = capturePlaybackRecoverySnapshot()
+        extractorBypassMediaIds.add(mediaId)
+        extractorPlaybackUrlCache.remove(mediaId)
+        invalidateResolvedStreamUrl(mediaId, failedUrl)
+        recordResolutionFailure(mediaId)
+
+        if (!playbackStreamRecoveryTracker.registerRetryAttempt(mediaId)) {
+            return false
+        }
+
+        Timber.tag("MusicService").i(
+            "Retrying playback for %s via local stream resolution after Echomuse extractor failure",
+            mediaId,
+        )
+        return preparePlaybackFromSnapshot(recoverySnapshot)
+    }
+
     private fun handleExtractorStreamHttpFailure(
         mediaId: String,
         isFullyDownloadedMedia: Boolean,
@@ -3686,13 +3734,15 @@ class MusicService :
             401 -> {
                 Timber.tag(TAG).w("Extractor bearer token was rejected during playback")
                 notifyExtractorAuthenticationRequired()
-                stopOnError()
+                val failedUrl = responseException.dataSpec.uri.toString()
+                if (!fallBackToLocalExtractionAfterExtractorFailure(mediaId, failedUrl)) stopOnError()
                 true
             }
 
             403 -> {
                 Timber.tag(TAG).w("Extractor rejected a tampered or invalid signed playback URL")
-                stopOnError()
+                val failedUrl = responseException.dataSpec.uri.toString()
+                if (!fallBackToLocalExtractionAfterExtractorFailure(mediaId, failedUrl)) stopOnError()
                 true
             }
 
@@ -7427,6 +7477,81 @@ class MusicService :
             .build()
     }
 
+    /**
+     * Returns a recently (within [RESOLVED_STREAM_CACHE_TTL_MS]) resolved stream URL for
+     * [mediaId], regardless of which path (primary, extractor, or crossfade secondary)
+     * resolved it. This is what lets an independent caller reuse a result another caller
+     * just produced instead of redoing a full resolution (which, for local playback, can
+     * include a multi-second BotGuard PO token mint).
+     *
+     * Deliberately not gated on [YouTube.currentPlaybackAuthState]'s fingerprint: that state
+     * is a single global object mutated by every PO token mint, for any video, so it churns
+     * on essentially every resolution and would make a fingerprint-matched check here almost
+     * never hit. The short TTL plus explicit invalidation on a confirmed-bad URL (see
+     * [invalidateResolvedStreamUrl]) are what keep this safe instead.
+     */
+    private fun cachedResolvedStreamUrl(mediaId: String): String? =
+        resolvedStreamCache[mediaId]
+            ?.takeIf { System.currentTimeMillis() - it.resolvedAtMs < RESOLVED_STREAM_CACHE_TTL_MS }
+            ?.url
+
+    private fun cacheResolvedStreamUrl(
+        mediaId: String,
+        url: String,
+        authFingerprint: String,
+    ) {
+        resolvedStreamCache[mediaId] =
+            ResolvedStreamEntry(
+                url = url,
+                resolvedAtMs = System.currentTimeMillis(),
+                authFingerprint = authFingerprint,
+            )
+    }
+
+    /**
+     * Only drops the cached entry if it's actually the URL that just failed. A failure on
+     * one path must not erase a still-fresh success another path just recorded.
+     */
+    private fun invalidateResolvedStreamUrl(
+        mediaId: String,
+        failedUrl: String?,
+    ) {
+        if (failedUrl == null) {
+            resolvedStreamCache.remove(mediaId)
+            return
+        }
+        resolvedStreamCache.computeIfPresent(mediaId) { _, entry ->
+            entry.takeUnless { it.url == failedUrl }
+        }
+    }
+
+    private fun isResolutionOnCooldown(mediaId: String): Boolean {
+        val nextAllowedAttemptAtMs = resolutionBackoff[mediaId]?.nextAllowedAttemptAtMs ?: return false
+        return System.currentTimeMillis() < nextAllowedAttemptAtMs
+    }
+
+    /**
+     * Records a failed resolution attempt and schedules an exponentially increasing cooldown
+     * (capped at [RESOLUTION_BACKOFF_MAX_MS]) before this video ID is allowed to trigger
+     * another full resolution, from any caller.
+     */
+    private fun recordResolutionFailure(mediaId: String) {
+        val previousFailures = resolutionBackoff[mediaId]?.consecutiveFailures ?: 0
+        val failures = previousFailures + 1
+        val backoffMs =
+            (RESOLUTION_BACKOFF_BASE_MS shl (failures - 1).coerceAtMost(4))
+                .coerceAtMost(RESOLUTION_BACKOFF_MAX_MS)
+        resolutionBackoff[mediaId] =
+            ResolutionBackoffState(
+                consecutiveFailures = failures,
+                nextAllowedAttemptAtMs = System.currentTimeMillis() + backoffMs,
+            )
+    }
+
+    private fun clearResolutionBackoff(mediaId: String) {
+        resolutionBackoff.remove(mediaId)
+    }
+
     private fun resolvePlaybackDataSpec(
         dataSpec: DataSpec,
         allowCacheShortCircuit: Boolean,
@@ -7487,14 +7612,55 @@ class MusicService :
         }
 
         val lowDataModeActive = isLowDataModeActive()
-        if (preferredStreamClient == PlayerStreamClient.ECHOMUSE_EXTRACTOR) {
-            return resolveEchomuseExtractorDataSpec(
-                dataSpec = dataSpec,
-                mediaId = mediaId,
+        val authFingerprint = YouTube.currentPlaybackAuthState().fingerprint
+
+        // Reuse whatever any path (primary, extractor, or crossfade secondary) resolved for
+        // this video ID moments ago, instead of redoing a full resolution here.
+        cachedResolvedStreamUrl(mediaId)?.let { cachedUrl ->
+            scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
+            val resolvedDataSpec = dataSpec.withUri(cachedUrl.toUri())
+            val length =
+                resolveStreamChunkLength(
+                    requestedLength = dataSpec.length,
+                    position = dataSpec.position,
+                    knownContentLength = knownContentLength,
+                    chunkLength = CHUNK_LENGTH,
+                    mimeType = storedFormat?.mimeType,
+                )
+            return length?.let { nonNullLength -> resolvedDataSpec.subrange(0L, nonNullLength) } ?: resolvedDataSpec
+        }
+
+        if (isResolutionOnCooldown(mediaId)) {
+            Timber.tag("MusicService").w(
+                "Skipping stream resolution for %s: on cooldown after a recent failure",
+                mediaId,
+            )
+            throw PlaybackException(
+                getString(R.string.error_no_stream),
+                null,
+                PlaybackException.ERROR_CODE_REMOTE_ERROR,
             )
         }
 
-        val authFingerprint = YouTube.currentPlaybackAuthState().fingerprint
+        if (preferredStreamClient == PlayerStreamClient.ECHOMUSE_EXTRACTOR && mediaId !in extractorBypassMediaIds) {
+            val extractorResult =
+                runCatching {
+                    resolveEchomuseExtractorDataSpec(
+                        dataSpec = dataSpec,
+                        mediaId = mediaId,
+                    )
+                }
+            extractorResult.getOrNull()?.let { return it }
+            val extractorFailure = extractorResult.exceptionOrNull()
+            if (extractorFailure is CancellationException) throw extractorFailure
+            recordResolutionFailure(mediaId)
+            Timber.tag("MusicService").w(
+                extractorFailure,
+                "Echomuse extractor failed to resolve %s; falling back to local stream resolution",
+                mediaId,
+            )
+        }
+
         playbackUrlCache[mediaId]
             ?.takeUnless { lowDataModeActive }
             ?.takeIf {
@@ -7539,6 +7705,7 @@ class MusicService :
                     throw youtubeFailure
                 }
             }.getOrElse { throwable ->
+                if (throwable !is CancellationException) recordResolutionFailure(mediaId)
                 when {
                     throwable is YTPlayerUtils.InvalidPlaybackLoginContextException -> {
                         promptLoginRecovery(mediaId, throwable.targetUrl)
@@ -7607,6 +7774,8 @@ class MusicService :
             requireNotNull(playbackData) {
                 getString(R.string.error_unknown)
             }
+        extractorBypassMediaIds.remove(mediaId)
+        clearResolutionBackoff(mediaId)
         nonNullPlayback.playbackTracking
             ?.remotePlaybackTrackingUrl()
             ?.let { remotePlaybackTrackingUrlCache[mediaId] = it }
@@ -7664,6 +7833,7 @@ class MusicService :
 
         val trackingExpiryMs = System.currentTimeMillis() + (nonNullPlayback.streamExpiresInSeconds * 1000L)
 
+        cacheResolvedStreamUrl(mediaId, streamUrl, nonNullPlayback.authFingerprint)
         if (!lowDataModeActive) {
             playbackUrlCache[mediaId] =
                 AuthScopedCacheValue(
@@ -7714,6 +7884,7 @@ class MusicService :
                     )
                 }
             }.getOrElse { throwable ->
+                if (throwable !is CancellationException) recordResolutionFailure(mediaId)
                 when {
                     throwable.isNetworkConnectionFailure() -> {
                         throw PlaybackException(
@@ -7754,6 +7925,8 @@ class MusicService :
             }
 
         val streamUrl = extraction.streamUrl
+        clearResolutionBackoff(mediaId)
+        cacheResolvedStreamUrl(mediaId, streamUrl, authFingerprint)
         extractorPlaybackUrlCache[mediaId] =
             AuthScopedCacheValue(
                 url = streamUrl,
@@ -8769,5 +8942,17 @@ class MusicService :
         private const val EchomuseExtractorHost = "moriextractor.koyeb.app"
         private const val EchomuseExtractorCacheFingerprintPrefix = "echomuse_extractor:"
         private const val EchomuseExtractorExpirySafetyMs = 30_000L
+
+        // Shared "we just resolved this" memo, checked before any path (primary,
+        // extractor, or crossfade secondary) does a full resolution for a video ID.
+        private const val RESOLVED_STREAM_CACHE_TTL_MS = 3 * 60 * 1000L
+
+        // Backoff between full resolution attempts for the same video ID, so a
+        // failure doesn't immediately trigger another expensive resolution (a full
+        // player-response fetch plus, when needed, a fresh BotGuard PO token mint)
+        // from a different, independent caller (e.g. crossfade prebuffering retrying
+        // right after the primary player's own attempt just failed).
+        private const val RESOLUTION_BACKOFF_BASE_MS = 5_000L
+        private const val RESOLUTION_BACKOFF_MAX_MS = 60_000L
     }
 }
