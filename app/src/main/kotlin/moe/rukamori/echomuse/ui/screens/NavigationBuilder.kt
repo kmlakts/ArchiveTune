@@ -59,7 +59,6 @@ import moe.rukamori.echomuse.ui.screens.settings.ChiperSettings
 import moe.rukamori.echomuse.ui.screens.settings.ContentSettings
 import moe.rukamori.echomuse.ui.screens.settings.CustomizeBackground
 import moe.rukamori.echomuse.ui.screens.settings.DebugSettings
-import moe.rukamori.echomuse.ui.screens.settings.DiscordSettings
 import moe.rukamori.echomuse.ui.screens.settings.HiddenPlaylistsScreen
 import moe.rukamori.echomuse.ui.screens.settings.IconScreen
 import moe.rukamori.echomuse.ui.screens.settings.IntegrationScreen
@@ -425,9 +424,6 @@ fun NavGraphBuilder.navigationBuilder(
     composable("settings/backup_restore") {
         BackupAndRestore(navController)
     }
-    composable("settings/discord") {
-        DiscordSettings(navController)
-    }
     composable("settings/integration") {
         IntegrationScreen(navController)
     }
@@ -439,10 +435,6 @@ fun NavGraphBuilder.navigationBuilder(
     }
     composable("settings/lastfm") {
         LastFMSettings(navController)
-    }
-    composable("settings/discord/experimental") {
-        moe.rukamori.echomuse.ui.screens.settings
-            .DiscordExperimental(navController)
     }
     composable("settings/misc") {
         DebugSettings(navController)

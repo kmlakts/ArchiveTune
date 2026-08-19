@@ -797,7 +797,7 @@
     <string name="playback_error_message">Nachricht</string>
     <string name="ip_rotation_refreshing">IP aktualisieren</string>
     <string name="device_mute_recovery_volume_disabled">Deaktiviert</string>
-    <string name="account_integrations_summary">Discord, Last.fm, Libre.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">Last.fm, Libre.fm, ListenBrainz</string>
     <string name="lastfm_provider_lastfm">Last.fm</string>
     <string name="lastfm_provider_librefm">Libre.fm</string>
     <string name="lastfm_login_network_error">Netzwerkfehler. Prüfe deine Verbindung.</string>

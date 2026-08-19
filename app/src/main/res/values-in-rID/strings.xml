@@ -759,7 +759,7 @@
     <string name="duration_sort">Durasi</string>
     <string name="offline_shortcut">Offline</string>
     <string name="cached">Cached</string>
-    <string name="account_integrations_summary">Discord, Last.fm, Libre.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">Last.fm, Libre.fm, ListenBrainz</string>
     <string name="instant_playback">Pemutaran Instan</string>
     <string name="on_device">Di perangkat ini</string>
     <string name="recently_played">Baru saja Diputar</string>

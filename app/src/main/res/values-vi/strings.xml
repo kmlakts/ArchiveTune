@@ -801,7 +801,7 @@
     <string name="custom_font">Phông chữ tùy chỉnh</string>
     <string name="custom_font_desc">Chọn tệp phông .ttf</string>
     <string name="custom_font_invalid">Chọn tệp phông .ttf</string>
-    <string name="account_integrations_summary">Discord, Last.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">Last.fm, ListenBrainz</string>
     <string name="device_mute_recovery_volume">Tăng âm lượng từ 0</string>
     <string name="device_mute_recovery_volume_disabled">Đã tắt</string>
     <string name="device_volume_zero_playback_paused">Phát nhạc đã tạm dừng vì âm lượng thiết bị là 0. Tăng âm lượng để tiếp tục.</string>

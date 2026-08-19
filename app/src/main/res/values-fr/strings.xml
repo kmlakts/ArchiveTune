@@ -782,7 +782,7 @@
     <string name="total_label">total</string>
     <string name="list_view">Affichage sous forme de liste</string>
     <string name="player_background_style_v8_v9_desc">Non disponible avec les styles de lecteur V8 et V9</string>
-    <string name="account_integrations_summary">Discord, Last.fm, Libre.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">Last.fm, Libre.fm, ListenBrainz</string>
     <string name="lyrics_mode">Mode paroles</string>
     <string name="all_artists_filter">Tous les artistes</string>
     <string name="sort_artist">Artiste</string>

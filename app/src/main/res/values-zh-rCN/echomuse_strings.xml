@@ -465,7 +465,7 @@
     <string name="settings_playback_subtitle">音频行为、淡入淡出及后台播放控制</string>
     <string name="settings_behavior_title">习惯与偏好</string>
     <string name="settings_behavior_subtitle">历史记录、默认选项与隐私偏好</string>
-    <string name="settings_integration_subtitle">Discord、Last.fm、Libre.fm 及 ListenBrainz 集成</string>
+    <string name="settings_integration_subtitle">Last.fm、Libre.fm 及 ListenBrainz 集成</string>
     <string name="settings_backup_restore_subtitle">导出与恢复个人应用数据</string>
     <string name="settings_developer_options_title">开发者选项</string>
     <string name="settings_developer_options_subtitle">实验性功能与调试日志</string>

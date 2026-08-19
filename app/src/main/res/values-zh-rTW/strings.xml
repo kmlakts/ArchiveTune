@@ -595,7 +595,7 @@
     <string name="restore_success">備份還原成功</string>
     <string name="restore_failed">備份還原失敗</string>
     <string name="discord_integration">Discord 集成</string>
-    <string name="account_integrations_summary">Discord, Last.fm, Libre.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">Last.fm, Libre.fm, ListenBrainz</string>
     <string name="discord_login_description">透過 OAuth 連接您的 Discord 帳戶，以便 Echomuse 發布「豐富狀態」（Rich Presence）。</string>
     <string name="discord_open_authorization">打開 Discord 授權</string>
     <string name="discord_waiting_for_authorization">正在等待 Discord 授權…</string>
