@@ -880,7 +880,7 @@
     <string name="ai_content_filter_source_summary">来源于 AiSlopList.com 的社区维护频道数据</string>
     <string name="ai_content_filter_updated">AI 频道列表已更新</string>
     <string name="ai_content_filter_update_failed">无法更新 AI 频道列表，将继续使用原有的列表</string>
-    <string name="account_integrations_summary">Discord、Last.fm、Libre.fm、ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="discord_login_description">通过 OAuth 连接你的 Discord 账号，以便 Echomuse 发布丰富的实时播放状态</string>
     <string name="discord_open_authorization">打开 Discord 授权页面</string>
     <string name="discord_waiting_for_authorization">正在等待 Discord 授权…</string>

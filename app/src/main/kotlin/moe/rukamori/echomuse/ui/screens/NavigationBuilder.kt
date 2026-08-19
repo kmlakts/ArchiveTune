@@ -63,7 +63,6 @@ import moe.rukamori.echomuse.ui.screens.settings.HiddenPlaylistsScreen
 import moe.rukamori.echomuse.ui.screens.settings.IconScreen
 import moe.rukamori.echomuse.ui.screens.settings.IntegrationScreen
 import moe.rukamori.echomuse.ui.screens.settings.InternetSettings
-import moe.rukamori.echomuse.ui.screens.settings.LastFMSettings
 import moe.rukamori.echomuse.ui.screens.settings.LogcatScreen
 import moe.rukamori.echomuse.ui.screens.settings.LyricsAnimationSettings
 import moe.rukamori.echomuse.ui.screens.settings.LyricsSettings
@@ -432,9 +431,6 @@ fun NavGraphBuilder.navigationBuilder(
     }
     composable("settings/music_together") {
         MusicTogetherScreen(navController)
-    }
-    composable("settings/lastfm") {
-        LastFMSettings(navController)
     }
     composable("settings/misc") {
         DebugSettings(navController)

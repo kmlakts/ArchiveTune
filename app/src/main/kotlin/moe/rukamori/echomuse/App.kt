@@ -41,11 +41,9 @@ import moe.rukamori.echomuse.gatekeeper.RunGatekeeperCheckUseCase
 import moe.rukamori.archivetune.innertube.YouTube
 import moe.rukamori.archivetune.innertube.models.YouTubeLocale
 import moe.rukamori.archivetune.kugou.KuGou
-import moe.rukamori.echomuse.lastfm.LastFM
 import moe.rukamori.archivetune.morideobfuscator.MoriCipherConfig
 import moe.rukamori.archivetune.morideobfuscator.MoriCipherRuntime
 import moe.rukamori.archivetune.paxsenix.PaxsenixLyrics
-import moe.rukamori.echomuse.scrobbling.LastFmServiceConfig
 import moe.rukamori.echomuse.storage.StorageFolderKind
 import moe.rukamori.echomuse.storage.StorageLocationRepository
 import moe.rukamori.echomuse.ui.player.CanvasArtworkPlaybackCache
@@ -166,10 +164,6 @@ class App :
         if (languageTag == "zh-TW") {
             KuGou.useTraditionalChinese = true
         }
-        LastFM.initialize(
-            apiKey = BuildConfig.LASTFM_API_KEY,
-            secret = BuildConfig.LASTFM_SECRET,
-        )
     }
 
     private fun initializeDeferredAsync() {
@@ -188,8 +182,6 @@ class App :
                 prefs[ContentLanguageKey]?.takeIf { it != SYSTEM_DEFAULT }?.let { lang ->
                     YouTube.locale = YouTube.locale.copy(hl = lang)
                 }
-
-                LastFmServiceConfig.fromPreferences(prefs).apply(prefs[LastFMSessionKey])
 
                 ProxyUtils.applyYouTubeProxy(
                     enabled = prefs[ProxyEnabledKey] == true,
@@ -331,15 +323,6 @@ class App :
             }
         } catch (e: Exception) {
             reportException(e)
-        }
-        applicationScope.launch(Dispatchers.IO) {
-            dataStore.data
-                .map { prefs ->
-                    LastFmServiceConfig.fromPreferences(prefs) to prefs[LastFMSessionKey]
-                }.distinctUntilChanged()
-                .collect { (serviceConfig, sessionKey) ->
-                    serviceConfig.apply(sessionKey)
-                }
         }
     }
 

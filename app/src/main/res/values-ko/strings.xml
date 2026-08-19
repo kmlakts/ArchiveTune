@@ -768,7 +768,7 @@
     <string name="total_label">총</string>
     <string name="list_view">목록 보기</string>
     <string name="player_background_style_v8_v9_desc">V8 및 V9 플레이어 스타일에서는 사용할 수 없습니다.</string>
-    <string name="account_integrations_summary">Last.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="all_artists_filter">모든 아티스트</string>
     <string name="sort_artist">아티스트</string>
     <string name="custom_font">사용자 지정 글꼴</string>

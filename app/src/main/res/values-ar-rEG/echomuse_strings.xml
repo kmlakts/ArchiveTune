@@ -404,7 +404,7 @@
     <string name="settings_playback_subtitle">سلوك الصوت، التداخل الصوتي، والتشغيل في الخلفية</string>
     <string name="settings_behavior_title">السلوك</string>
     <string name="settings_behavior_subtitle">السجل، الافتراضيات، وسلوك الخصوصية</string>
-    <string name="settings_integration_subtitle">Last.fm، Libre.fm، و ListenBrainz</string>
+    <string name="settings_integration_subtitle">ListenBrainz</string>
     <string name="settings_backup_restore_subtitle">تصدير واستعادة بياناتك الشخصية في التطبيق</string>
     <string name="settings_developer_options_title">خيارات المطورين</string>
     <string name="settings_developer_options_subtitle">الميزات التجريبية وتصحيح الأخطاء</string>

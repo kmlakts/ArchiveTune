@@ -63,17 +63,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
 
-        val lastfmApiKey =
-            localProperties.getProperty("LASTFM_API_KEY")
-                ?: System.getenv("LASTFM_API_KEY")
-                ?: ""
-        val lastfmSecret =
-            localProperties.getProperty("LASTFM_SECRET")
-                ?: System.getenv("LASTFM_SECRET")
-                ?: ""
-        buildConfigField("String", "LASTFM_API_KEY", "\"$lastfmApiKey\"")
-        buildConfigField("String", "LASTFM_SECRET", "\"$lastfmSecret\"")
-
         val togetherBearerToken =
             localProperties.getProperty("TOGETHER_BEARER_TOKEN")
                 ?: System.getenv("TOGETHER_BEARER_TOKEN")
@@ -324,7 +313,6 @@ dependencies {
     implementation(project(":lyrics:betterlyrics"))
     implementation(project(":lyrics:unison"))
     implementation(project(":lyrics:youlyplus"))
-    implementation(project(":lastfm"))
     implementation(project(":canvas"))
     implementation(project(":shazamkit"))
     implementation(project(":spotifycore"))

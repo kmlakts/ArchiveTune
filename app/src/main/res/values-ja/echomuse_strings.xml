@@ -487,7 +487,7 @@
     <string name="settings_playback_subtitle">オーディオの動作、クロスフェード、バックグラウンド再生</string>
     <string name="settings_behavior_title">行動</string>
     <string name="settings_behavior_subtitle">履歴、デフォルト、プライバシー行動</string>
-    <string name="settings_integration_subtitle">Last.fm、Libre.fm、ListenBrainz</string>
+    <string name="settings_integration_subtitle">ListenBrainz</string>
     <string name="settings_backup_restore_subtitle">個人のアプリデータをエクスポートして復元する</string>
     <string name="settings_developer_options_title">開発者向けオプション</string>
     <string name="settings_developer_options_subtitle">実験的な機能とデバッグ</string>

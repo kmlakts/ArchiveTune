@@ -833,7 +833,7 @@
     <string name="ai_content_filter_updated">تم تحديث قوائم قنوات الذكاء الاصطناعي</string>
     <string name="ai_content_filter_update_failed">تعذر تحديث قوائم قنوات الذكاء الاصطناعي. ستظل القوائم السابقة نشطة.</string>
     <string name="restore_success">تمت استعادة النسخة الاحتياطية بنجاح</string>
-    <string name="account_integrations_summary">Discord، Last.fm، Libre.fm، ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="discord_login_description">ربط حساب Discord الخاص بك عبر OAuth لتمكين Echomuse من نشر حالة الحضور (Rich Presence).</string>
     <string name="discord_open_authorization">فتح مصادقة Discord</string>
     <string name="discord_waiting_for_authorization">في انتظار مصادقة Discord...</string>

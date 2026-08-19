@@ -144,7 +144,6 @@ import moe.rukamori.echomuse.constants.CrossfadeDurationKey
 import moe.rukamori.echomuse.constants.CrossfadeEnabledKey
 import moe.rukamori.echomuse.constants.CrossfadeGaplessKey
 import moe.rukamori.echomuse.constants.DeviceMutePlaybackRecoveryVolumeKey
-import moe.rukamori.echomuse.constants.EnableLastFMScrobblingKey
 import moe.rukamori.echomuse.constants.EqualizerAutoHeadroomEnabledKey
 import moe.rukamori.echomuse.constants.EqualizerBandLevelsMbKey
 import moe.rukamori.echomuse.constants.EqualizerBassBoostEnabledKey
@@ -161,8 +160,6 @@ import moe.rukamori.echomuse.constants.HISTORY_DURATION_MIN
 import moe.rukamori.echomuse.constants.HideExplicitKey
 import moe.rukamori.echomuse.constants.HideVideoKey
 import moe.rukamori.echomuse.constants.HistoryDuration
-import moe.rukamori.echomuse.constants.LastFMSessionKey
-import moe.rukamori.echomuse.constants.LastFMUseNowPlaying
 import moe.rukamori.echomuse.constants.ListenBrainzEnabledKey
 import moe.rukamori.echomuse.constants.ListenBrainzTokenKey
 import moe.rukamori.echomuse.constants.MaxSongCacheSizeKey
@@ -178,9 +175,6 @@ import moe.rukamori.echomuse.constants.PlayerStreamClient
 import moe.rukamori.echomuse.constants.PlayerStreamClientKey
 import moe.rukamori.echomuse.constants.PlayerVolumeKey
 import moe.rukamori.echomuse.constants.RepeatModeKey
-import moe.rukamori.echomuse.constants.ScrobbleDelayPercentKey
-import moe.rukamori.echomuse.constants.ScrobbleDelaySecondsKey
-import moe.rukamori.echomuse.constants.ScrobbleMinSongDurationKey
 import moe.rukamori.echomuse.constants.ShowLyricsKey
 import moe.rukamori.echomuse.constants.SkipSilenceKey
 import moe.rukamori.echomuse.constants.SmartTrimmerKey
@@ -218,7 +212,6 @@ import moe.rukamori.archivetune.innertube.models.SongItem
 import moe.rukamori.archivetune.innertube.models.WatchEndpoint
 import moe.rukamori.archivetune.innertube.models.YouTubeClient.Companion.WEB_REMIX
 import moe.rukamori.archivetune.innertube.models.response.PlayerResponse
-import moe.rukamori.echomuse.lastfm.LastFM
 import moe.rukamori.echomuse.lyrics.LyricsHelper
 import moe.rukamori.echomuse.lyrics.LyricsPreloadManager
 import moe.rukamori.echomuse.models.MediaMetadata
@@ -236,7 +229,6 @@ import moe.rukamori.echomuse.playback.queues.filterBlockedArtists
 import moe.rukamori.echomuse.playback.queues.filterExplicit
 import moe.rukamori.echomuse.playback.queues.filterVideo
 import moe.rukamori.echomuse.playback.queues.hasBlockedArtist
-import moe.rukamori.echomuse.scrobbling.LastFmServiceConfig
 import moe.rukamori.echomuse.storage.StorageFolderKind
 import moe.rukamori.echomuse.storage.StorageLocationRepository
 import moe.rukamori.echomuse.together.TogetherPlaybackSync
@@ -708,8 +700,6 @@ class MusicService :
                 }
             }
         }
-
-    private var scrobbleManager: moe.rukamori.echomuse.utils.ScrobbleManager? = null
 
     private lateinit var widgetUpdater: MusicServiceWidgetUpdater
 
@@ -1466,59 +1456,6 @@ class MusicService :
                 val safeSizeMb = maxSongCacheSizeMb.toLong().coerceAtMost(Long.MAX_VALUE / bytesPerMb)
                 val limitBytes = safeSizeMb * bytesPerMb
                 trimPlayerCacheToBytes(limitBytes)
-            }
-
-        dataStore.data
-            .map { preferences ->
-                val serviceConfig = LastFmServiceConfig.fromPreferences(preferences)
-                val enabled = preferences[EnableLastFMScrobblingKey] ?: false
-                val hasSession = !preferences[LastFMSessionKey].isNullOrBlank()
-                val serviceConfigured = serviceConfig.initialized
-                val historyPaused = preferences[PauseListenHistoryKey] ?: false
-                enabled && hasSession && serviceConfigured && !historyPaused
-            }.debounce(300)
-            .distinctUntilChanged()
-            .collect(scope) { shouldEnable ->
-                if (shouldEnable && scrobbleManager == null) {
-                    val delayPercent = dataStore.get(ScrobbleDelayPercentKey, LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT)
-                    val minSongDuration = dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
-                    val delaySeconds = dataStore.get(ScrobbleDelaySecondsKey, LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS)
-
-                    scrobbleManager =
-                        moe.rukamori.echomuse.utils.ScrobbleManager(
-                            ioScope,
-                            minSongDuration = minSongDuration,
-                            scrobbleDelayPercent = delayPercent,
-                            scrobbleDelaySeconds = delaySeconds,
-                        )
-                    scrobbleManager?.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
-                } else if (!shouldEnable && scrobbleManager != null) {
-                    scrobbleManager?.destroy()
-                    scrobbleManager = null
-                }
-            }
-
-        dataStore.data
-            .map { it[LastFMUseNowPlaying] ?: false }
-            .distinctUntilChanged()
-            .collectLatest(scope) {
-                scrobbleManager?.useNowPlaying = it
-            }
-
-        dataStore.data
-            .map { prefs ->
-                Triple(
-                    prefs[ScrobbleDelayPercentKey] ?: LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT,
-                    prefs[ScrobbleMinSongDurationKey] ?: LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION,
-                    prefs[ScrobbleDelaySecondsKey] ?: LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS,
-                )
-            }.distinctUntilChanged()
-            .collect(scope) { (delayPercent, minSongDuration, delaySeconds) ->
-                scrobbleManager?.let {
-                    it.scrobbleDelayPercent = delayPercent
-                    it.minSongDuration = minSongDuration
-                    it.scrobbleDelaySeconds = delaySeconds
-                }
             }
 
         scope.launch(Dispatchers.IO) {
@@ -6089,8 +6026,6 @@ class MusicService :
 
         widgetUpdater.update()
 
-        scrobbleManager?.onSongStop()
-
         if (!timelineEmpty &&
             dataStore.get(AutoLoadMoreKey, true) &&
             reason != Player.MEDIA_ITEM_TRANSITION_REASON_REPEAT &&
@@ -6131,10 +6066,6 @@ class MusicService :
             !currentQueue.hasNextPage()
         ) {
             onInfiniteQueueEnabled()
-        }
-
-        if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
-            scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
         }
 
         scope.launch {
@@ -6400,8 +6331,6 @@ class MusicService :
                                 }
                             }
                         }
-
-                        // Last.fm now playing - handled by ScrobbleManager
                     } catch (_: Exception) {
                     }
                 } catch (e: Exception) {
@@ -6463,19 +6392,12 @@ class MusicService :
                                 }
                             }
                         }
-
-                        // Last.fm now playing - handled by ScrobbleManager
                     } catch (_: Exception) {
                     }
                 } catch (e: Exception) {
                     Timber.tag("MusicService").v(e, "isPlaying/mediaTransition follow-up work failed")
                 }
             }
-        }
-
-        if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            // Scrobble: Track play/pause state
-            scrobbleManager?.onPlayerStateChanged(player.isPlaying, player.currentMetadata, duration = player.duration)
         }
 
         // Persist queue on play/pause so a force-stop right after pausing still restores the correct position

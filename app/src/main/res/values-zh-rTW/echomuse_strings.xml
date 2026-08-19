@@ -427,7 +427,7 @@
     <string name="settings_playback_subtitle">音訊行為、交錯淡入淡出與後台播放</string>
     <string name="settings_behavior_title">隱私</string>
     <string name="settings_behavior_subtitle">歷史記錄、預設設定與隱私行為</string>
-    <string name="settings_integration_subtitle">Last.fm、Libre.fm 和 ListenBrainz</string>
+    <string name="settings_integration_subtitle">ListenBrainz</string>
     <string name="settings_backup_restore_subtitle">導出或導入您的應用程式數據</string>
     <string name="settings_developer_options_title">開發者選項</string>
     <string name="settings_developer_options_subtitle">實驗性功能與除錯</string>

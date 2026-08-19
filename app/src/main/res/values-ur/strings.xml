@@ -623,7 +623,7 @@
     <string name="restore_success">کامیابی سے ذخیرے کو محفوظ کیا گیا</string>
     <string name="restore_failed">ذخیرے کو بحال کرنے میں ناکام</string>
     <string name="discord_integration">ڈسکورڈ کا انضمام</string>
-    <string name="account_integrations_summary">ڈسکورڈ، Last.fm، Libre.fm،ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="discord_login_description">‫اپنے Discord اکاؤنٹ کو OAuth کے ذریعے سے وصل میں لائیں تاکہ Echomuse رچ پریزنس (Rich Presence) کو شائع کر سکے۔</string>
     <string name="discord_open_authorization">ڈسکورڈ سے اجازت لیں</string>
     <string name="discord_waiting_for_authorization">ڈسکورڈ کی اجازت ملنے کا انتظار کر رہا ہے...</string>

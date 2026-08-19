@@ -693,7 +693,7 @@
     <string name="restore_success">バックアップが正常に復元されました</string>
     <string name="restore_failed">バックアップの復元に失敗しました</string>
     <string name="discord_integration">Discordの統合</string>
-    <string name="account_integrations_summary">Discord、Last.fm、Libre.fm、ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="discord_login_description">Discord アカウントを OAuth に接続して、Echomuse がリッチ プレゼンスを公開できるようにします。</string>
     <string name="discord_open_authorization">Discord認証を開く</string>
     <string name="discord_waiting_for_authorization">Discordの承認を待っています...</string>

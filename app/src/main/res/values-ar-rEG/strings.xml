@@ -640,7 +640,7 @@
     <string name="restore_success">اتستعادت النسخة الاحتياطية بنجاح</string>
     <string name="restore_failed">معرفناش نستعيد النسخة الاحتياطية</string>
     <string name="discord_integration">الربط مع ديسكورد</string>
-    <string name="account_integrations_summary">ديسكورد، Last.fm، Libre.fm، ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="discord_login_description">اربط حساب ديسكورد بتاعك عبر OAuth عشان Echomuse يقدر ينشر نشاط استماعك (Rich Presence).</string>
     <string name="discord_open_authorization">فتح مصادقة ديسكورد</string>
     <string name="discord_waiting_for_authorization">في انتظار مصادقة ديسكورد…</string>

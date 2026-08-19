@@ -613,7 +613,7 @@
     <string name="restore_success">Backup restaurado com sucesso</string>
     <string name="restore_failed">Falha ao restaurar backup</string>
     <string name="discord_integration">Integração com Discord</string>
-    <string name="account_integrations_summary">Last.fm, Libre.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="discord_login_description">Conecte sua conta do Discord com OAuth para que o Echomuse publique Rich Presence.</string>
     <string name="discord_open_authorization">Abrir autorização do Discord</string>
     <string name="discord_waiting_for_authorization">Aguardando autorização do Discord...</string>

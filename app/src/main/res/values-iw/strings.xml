@@ -570,7 +570,7 @@
     <string name="restore_success">הגיבוי שוחזר בהצלחה</string>
     <string name="restore_failed">שחזור הגיבוי נכשל</string>
     <string name="discord_integration">חיבור עם דיסקורד</string>
-    <string name="account_integrations_summary">דיסקורד, Last.fm, Libre.fm, ListenBrainz</string>
+    <string name="account_integrations_summary">ListenBrainz</string>
     <string name="discord_login_description">חבר את חשבון הדיסקורד שלך עם OAuth כדי ש-Echomuse יוכל לפרסם את Rich Presence.</string>
     <string name="discord_open_authorization">הרשאת פתיחת דיסקורד</string>
     <string name="discord_waiting_for_authorization">מחכה לאישור דיסקורד...</string>
