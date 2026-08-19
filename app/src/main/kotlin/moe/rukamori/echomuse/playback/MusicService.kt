@@ -531,9 +531,21 @@ class MusicService :
     private var crossfadeSuppressedMediaId: String? = null
     private var lyricsPreloadManager: LyricsPreloadManager? = null
 
-    private val secondaryCrossfadeListener =
+    /**
+     * Both decks get one of these permanently attached, so `deck` distinguishes which deck this
+     * particular listener instance is bound to. `Player.Listener.onPlayerError` does not pass the
+     * source player, and a single shared listener instance attached to both decks cannot tell a
+     * genuinely-failing speculative secondary player apart from the currently-active primary deck
+     * hitting its own, separately-handled, often-recoverable error (see
+     * MusicService.onPlayerError, attached to the DeckSwitchingPlayer wrapper). Without this check,
+     * any transient primary-deck error - even one the primary itself recovers from via
+     * retryPlaybackAfterStreamFailure - would also cancel that song's scheduled crossfade here,
+     * which is why crossfades kept silently falling back to a plain cut.
+     */
+    private fun createSecondaryCrossfadeListener(deck: ExoPlayer): Player.Listener =
         object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
+                if (secondaryCrossfadePlayer !== deck) return
                 Timber.tag(TAG).w(error, "Secondary crossfade player failed")
                 scope.launch {
                     abortCrossfadeAndResumePrimary("secondary_player_error")
@@ -1122,7 +1134,7 @@ class MusicService :
                 .build()
                 .apply {
                     addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
-                    addListener(secondaryCrossfadeListener)
+                    addListener(createSecondaryCrossfadeListener(this))
                     setOffloadEnabled(false)
                 }
         deckA = localPlayer
@@ -1144,7 +1156,7 @@ class MusicService :
                 .build()
                 .apply {
                     addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
-                    addListener(secondaryCrossfadeListener)
+                    addListener(createSecondaryCrossfadeListener(this))
                     setOffloadEnabled(false)
                     volume = 0f
                 }
