@@ -61,7 +61,6 @@ import moe.rukamori.echomuse.ui.screens.settings.CustomizeBackground
 import moe.rukamori.echomuse.ui.screens.settings.DebugSettings
 import moe.rukamori.echomuse.ui.screens.settings.HiddenPlaylistsScreen
 import moe.rukamori.echomuse.ui.screens.settings.IconScreen
-import moe.rukamori.echomuse.ui.screens.settings.IntegrationScreen
 import moe.rukamori.echomuse.ui.screens.settings.InternetSettings
 import moe.rukamori.echomuse.ui.screens.settings.LogcatScreen
 import moe.rukamori.echomuse.ui.screens.settings.LyricsAnimationSettings
@@ -422,9 +421,6 @@ fun NavGraphBuilder.navigationBuilder(
     }
     composable("settings/backup_restore") {
         BackupAndRestore(navController)
-    }
-    composable("settings/integration") {
-        IntegrationScreen(navController)
     }
     composable("settings/ai_integration") {
         AiIntegrationSettings(navController)

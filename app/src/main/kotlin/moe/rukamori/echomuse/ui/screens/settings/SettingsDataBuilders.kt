@@ -91,15 +91,6 @@ fun buildSettingsGroups(
             accentColor = MaterialTheme.colorScheme.primary,
             onClick = { navController.navigate("settings/privacy") },
         )
-    val integration =
-        SettingsItem(
-            key = "integration",
-            icon = painterResource(R.drawable.auto_awesome),
-            title = stringResource(R.string.integration),
-            subtitle = stringResource(R.string.settings_integration_subtitle),
-            accentColor = MaterialTheme.colorScheme.secondary,
-            onClick = { navController.navigate("settings/integration") },
-        )
     val aiIntegration =
         SettingsItem(
             key = "ai_integration",
@@ -237,7 +228,7 @@ fun buildSettingsGroups(
         ),
         SettingsGroup(
             title = stringResource(R.string.integration),
-            items = listOf(integration, aiIntegration, internet),
+            items = listOf(aiIntegration, internet),
         ),
         SettingsGroup(
             title = stringResource(R.string.storage),
