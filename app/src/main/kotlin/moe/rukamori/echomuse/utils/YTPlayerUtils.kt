@@ -145,9 +145,22 @@ object YTPlayerUtils {
 
     /**
      * Clients used for fallback streams in case the streams of the main client do not work.
+     *
+     * VISIONOS and TVHTML5_SIMPLY are tried first, ahead of the ANDROID_VR variants: measured
+     * on-device (2026-08-19, n=10 clean resolutions, no VPN interference), VISIONOS resolved in
+     * ~0.3s whenever it was reached and needs no PO token, while ANDROID_VR often needs a second
+     * variant to mint a GVS PO token first (~6.2-6.7s), and in one case 22 clients were exhausted
+     * before reaching VISIONOS at position 22, costing 27.7s. This mirrors yt-dlp's current
+     * default client priority ("visionos,web") and its callout of tv/tv_simply as currently
+     * reliable and token-free - see yt-dlp's own notes that this client landscape is "an active
+     * arms race" that shifts over weeks, so this ordering may need revisiting later.
+     * TVHTML5 and TVHTML5_SIMPLY_EMBEDDED_PLAYER both require login and are kept in their
+     * original position; only the anonymous-capable TVHTML5_SIMPLY was promoted.
      */
     private val STREAM_FALLBACK_CLIENTS: Array<YouTubeClient> =
         arrayOf(
+            VISIONOS,
+            TVHTML5_SIMPLY,
             ANDROID_VR_NO_AUTH,
             ANDROID_VR_1_65_10,
             ANDROID_VR_1_61_48,
@@ -160,7 +173,6 @@ object YTPlayerUtils {
             WEB,
             WEB_PRIMARY,
             TVHTML5,
-            TVHTML5_SIMPLY,
             IOS,
             MOBILE,
             ANDROID_MUSIC,
@@ -169,7 +181,6 @@ object YTPlayerUtils {
             ANDROID_TESTSUITE,
             ANDROID_UNPLUGGED,
             IPADOS,
-            VISIONOS,
             TVHTML5_SIMPLY_EMBEDDED_PLAYER,
         )
 
