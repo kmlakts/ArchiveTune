@@ -5,7 +5,7 @@
  * Do not remove or alter this notice. - Per GPL-3.0 Section 4 & Section 5
  */
 
-package moe.rukamori.echomuse.shazamkit
+package com.kmlakts.echomuse.shazamkit
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -27,9 +27,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
-import moe.rukamori.echomuse.shazamkit.models.RecognitionResult
-import moe.rukamori.echomuse.shazamkit.models.ShazamRequestJson
-import moe.rukamori.echomuse.shazamkit.models.ShazamResponseJson
+import com.kmlakts.echomuse.shazamkit.models.RecognitionResult
+import com.kmlakts.echomuse.shazamkit.models.ShazamRequestJson
+import com.kmlakts.echomuse.shazamkit.models.ShazamResponseJson
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue

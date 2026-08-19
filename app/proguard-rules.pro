@@ -108,11 +108,11 @@
 
 ## Queue Persistence Rules
 # Keep queue-related classes to prevent serialization issues in release builds
--keep class moe.rukamori.echomuse.models.PersistQueue { *; }
--keep class moe.rukamori.echomuse.models.PersistPlayerState { *; }
--keep class moe.rukamori.echomuse.models.QueueData { *; }
--keep class moe.rukamori.echomuse.models.QueueType { *; }
--keep class moe.rukamori.echomuse.playback.queues.** { *; }
+-keep class com.kmlakts.echomuse.models.PersistQueue { *; }
+-keep class com.kmlakts.echomuse.models.PersistPlayerState { *; }
+-keep class com.kmlakts.echomuse.models.QueueData { *; }
+-keep class com.kmlakts.echomuse.models.QueueType { *; }
+-keep class com.kmlakts.echomuse.playback.queues.** { *; }
 
 # Keep serialization methods for queue persistence
 -keepclassmembers class * implements java.io.Serializable {

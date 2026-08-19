@@ -6,9 +6,9 @@
         android:shortcutId="search"
         android:shortcutShortLabel="@string/search">
         <intent
-            android:action="moe.rukamori.echomuse.action.SEARCH"
-            android:targetClass="moe.rukamori.echomuse.MainActivity"
-            android:targetPackage="moe.rukamori.echomuse" />
+            android:action="com.kmlakts.echomuse.action.SEARCH"
+            android:targetClass="com.kmlakts.echomuse.MainActivity"
+            android:targetPackage="com.kmlakts.echomuse" />
     </shortcut>
     <shortcut
         android:enabled="true"
@@ -16,9 +16,9 @@
         android:shortcutId="library"
         android:shortcutShortLabel="@string/filter_library">
         <intent
-            android:action="moe.rukamori.echomuse.action.LIBRARY"
-            android:targetClass="moe.rukamori.echomuse.MainActivity"
-            android:targetPackage="moe.rukamori.echomuse" />
+            android:action="com.kmlakts.echomuse.action.LIBRARY"
+            android:targetClass="com.kmlakts.echomuse.MainActivity"
+            android:targetPackage="com.kmlakts.echomuse" />
     </shortcut>
     <shortcut
         android:enabled="true"
@@ -26,8 +26,8 @@
         android:shortcutId="music_recognition"
         android:shortcutShortLabel="@string/music_recognition">
         <intent
-            android:action="moe.rukamori.echomuse.action.MUSIC_RECOGNITION"
-            android:targetClass="moe.rukamori.echomuse.MainActivity"
-            android:targetPackage="moe.rukamori.echomuse" />
+            android:action="com.kmlakts.echomuse.action.MUSIC_RECOGNITION"
+            android:targetClass="com.kmlakts.echomuse.MainActivity"
+            android:targetPackage="com.kmlakts.echomuse" />
     </shortcut>
 </shortcuts>

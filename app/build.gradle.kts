@@ -50,11 +50,11 @@ val hasReleaseSigningConfig =
         releaseKeyAlias != null &&
         releaseKeyPassword != null
 android {
-    namespace = "moe.rukamori.echomuse"
+    namespace = "com.kmlakts.echomuse"
     compileSdk = 37
 
     defaultConfig {
-    applicationId = "moe.rukamori.echomuse"
+    applicationId = "com.kmlakts.echomuse"
         minSdk = 26
         targetSdk = 37
         versionCode = 140
@@ -354,7 +354,7 @@ androidComponents {
                 metadataFile.set(rootProject.layout.projectDirectory.file("IconPack/metadata.json"))
                 svgDirectory.set(rootProject.layout.projectDirectory.dir("IconPack/svg"))
                 applicationId.set(variant.applicationId)
-                targetActivityClassName.set("moe.rukamori.echomuse.MainActivity")
+                targetActivityClassName.set("com.kmlakts.echomuse.MainActivity")
                 resourceOutputDirectory.set(
                     layout.buildDirectory.dir("generated/iconPack/${variant.name}/res"),
                 )
