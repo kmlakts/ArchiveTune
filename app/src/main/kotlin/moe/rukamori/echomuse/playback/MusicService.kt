@@ -3615,12 +3615,17 @@ class MusicService :
         extractorPlaybackUrlCache.remove(mediaId)
         YTPlayerUtils.invalidateCachedStreamUrls(mediaId)
         invalidateResolvedStreamUrl(mediaId, failedUrl)
-        recordResolutionFailure(mediaId)
         if (!failedExpiredUrl && cachedExtractorFailedUrl == null && requestProfile.clientKey.isNotEmpty()) {
             YTPlayerUtils.markStreamClientFailed(mediaId, requestProfile.clientKey, responseException.responseCode)
         }
 
+        // playbackStreamRecoveryTracker already caps this to a single retry per mediaId, so only
+        // enter the resolution-backoff cooldown once that retry budget is spent - recording it here
+        // unconditionally would poison the very retry this function is about to trigger via
+        // preparePlaybackFromSnapshot(), which re-enters resolvePlaybackDataSpec() for this mediaId
+        // synchronously and would see itself as "on cooldown" from the line above.
         if (!playbackStreamRecoveryTracker.registerRetryAttempt(mediaId)) {
+            recordResolutionFailure(mediaId)
             return false
         }
 
@@ -3716,9 +3721,11 @@ class MusicService :
         extractorBypassMediaIds.add(mediaId)
         extractorPlaybackUrlCache.remove(mediaId)
         invalidateResolvedStreamUrl(mediaId, failedUrl)
-        recordResolutionFailure(mediaId)
 
+        // See retryPlaybackAfterStreamFailure() for why this must not record the failure before
+        // the retry it triggers below - registerRetryAttempt() already caps retries to one.
         if (!playbackStreamRecoveryTracker.registerRetryAttempt(mediaId)) {
+            recordResolutionFailure(mediaId)
             return false
         }
 
