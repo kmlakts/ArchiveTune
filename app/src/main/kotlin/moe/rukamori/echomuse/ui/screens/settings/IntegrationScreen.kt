@@ -20,33 +20,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import moe.rukamori.echomuse.LocalPlayerAwareWindowInsets
 import moe.rukamori.echomuse.R
-import moe.rukamori.echomuse.constants.ListenBrainzEnabledKey
-import moe.rukamori.echomuse.constants.ListenBrainzTokenKey
 import moe.rukamori.echomuse.ui.component.IconButton
-import moe.rukamori.echomuse.ui.component.InfoLabel
-import moe.rukamori.echomuse.ui.component.PreferenceEntry
-import moe.rukamori.echomuse.ui.component.PreferenceGroup
-import moe.rukamori.echomuse.ui.component.SwitchPreference
-import moe.rukamori.echomuse.ui.component.TextFieldDialog
 import moe.rukamori.echomuse.ui.utils.backToMain
-import moe.rukamori.echomuse.utils.rememberPreference
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IntegrationScreen(navController: NavController) {
-    val (listenBrainzEnabled, onListenBrainzEnabledChange) = rememberPreference(ListenBrainzEnabledKey, false)
-    val (listenBrainzToken, onListenBrainzTokenChange) = rememberPreference(ListenBrainzTokenKey, "")
-
-    var showListenBrainzTokenEditor = remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -74,56 +59,6 @@ fun IntegrationScreen(navController: NavController) {
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = SettingsDimensions.ScreenBottomPadding),
         ) {
-            PreferenceGroup(title = stringResource(R.string.scrobbling)) {
-                item {
-                    SwitchPreference(
-                        title = { Text(stringResource(R.string.listenbrainz_scrobbling)) },
-                        description = stringResource(R.string.listenbrainz_scrobbling_description),
-                        icon = { Icon(painterResource(R.drawable.token), null) },
-                        checked = listenBrainzEnabled,
-                        onCheckedChange = onListenBrainzEnabledChange,
-                    )
-                }
-
-                item {
-                    PreferenceEntry(
-                        title = {
-                            Text(
-                                if (listenBrainzToken.isBlank()) {
-                                    stringResource(
-                                        R.string.set_listenbrainz_token,
-                                    )
-                                } else {
-                                    stringResource(R.string.edit_listenbrainz_token)
-                                },
-                            )
-                        },
-                        icon = { Icon(painterResource(R.drawable.token), null) },
-                        onClick = { showListenBrainzTokenEditor.value = true },
-                    )
-                }
-            }
         }
-    }
-
-    if (showListenBrainzTokenEditor.value) {
-        TextFieldDialog(
-            initialTextFieldValue =
-                androidx.compose.ui.text.input
-                    .TextFieldValue(listenBrainzToken),
-            onDone = { data ->
-                onListenBrainzTokenChange(data)
-                showListenBrainzTokenEditor.value = false
-            },
-            onDismiss = { showListenBrainzTokenEditor.value = false },
-            singleLine = true,
-            maxLines = 1,
-            isInputValid = {
-                it.isNotEmpty()
-            },
-            extraContent = {
-                InfoLabel(text = stringResource(R.string.listenbrainz_scrobbling_description))
-            },
-        )
     }
 }
