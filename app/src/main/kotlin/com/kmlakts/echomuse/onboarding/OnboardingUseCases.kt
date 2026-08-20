@@ -47,7 +47,6 @@ class BuildOnboardingUiStateUseCase
                 pages = pages,
                 permissions = ImmutableList.copyOf(data.permissions.map { it.toUiModel() }),
                 loginBenefits = loginBenefits,
-                communityActions = communityActions,
             )
 
         private fun variantLabelResId(): Int =
@@ -190,12 +189,6 @@ class BuildOnboardingUiStateUseCase
                         subtitleResId = R.string.onboarding_login_subtitle,
                         iconResId = R.drawable.login,
                     ),
-                    OnboardingPageUiModel(
-                        id = OnboardingPageId.COMMUNITY,
-                        titleResId = R.string.onboarding_community_title,
-                        subtitleResId = R.string.onboarding_community_subtitle,
-                        iconResId = R.drawable.star,
-                    ),
                 )
 
             val loginBenefits =
@@ -217,31 +210,6 @@ class BuildOnboardingUiStateUseCase
                         titleResId = R.string.onboarding_login_playback_title,
                         descriptionResId = R.string.onboarding_login_playback_desc,
                         iconResId = R.drawable.bolt,
-                    ),
-                )
-
-            val communityActions =
-                ImmutableList.of(
-                    OnboardingCommunityActionUiModel(
-                        id = "github",
-                        titleResId = R.string.support_development_star,
-                        descriptionResId = R.string.onboarding_community_github_desc,
-                        iconResId = R.drawable.github,
-                        url = "https://github.com/rukamori/ArchiveTune",
-                    ),
-                    OnboardingCommunityActionUiModel(
-                        id = "discord",
-                        titleResId = R.string.onboarding_community_discord_title,
-                        descriptionResId = R.string.onboarding_community_telegram_desc,
-                        iconResId = R.drawable.discord,
-                        url = "https://discord.gg/XF2fpb9rTq",
-                    ),
-                    OnboardingCommunityActionUiModel(
-                        id = "telegram",
-                        titleResId = R.string.onboarding_community_telegram_title,
-                        descriptionResId = R.string.onboarding_community_telegram_desc,
-                        iconResId = R.drawable.telegram,
-                        url = "https://t.me/ArchiveTuneGC",
                     ),
                 )
         }

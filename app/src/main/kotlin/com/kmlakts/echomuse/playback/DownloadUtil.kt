@@ -110,13 +110,22 @@ class DownloadUtil
                     if (!isYouTubeMediaHost) return@addInterceptor chain.proceed(request)
 
                     val requestProfile = StreamClientUtils.resolveRequestProfile(request.url)
-                    val response = chain.proceed(
-                        StreamClientUtils
-                            .applyRequestProfile(
-                                request.newBuilder(),
-                                requestProfile,
-                            ).build(),
-                    )
+                    val requestBuilder =
+                        StreamClientUtils.applyRequestProfile(
+                            request.newBuilder(),
+                            requestProfile,
+                        )
+                    // Downloads fetch the whole file from position 0 with no known length, so
+                    // Media3's OkHttpDataSource never sets a Range header on its own (unlike
+                    // playback, which always requests an explicit chunk length and gets one for
+                    // free). A plain full-file GET to googlevideo.com is throttled to roughly
+                    // 40-70 KB/s server-side; a ranged request for that same whole file - even a
+                    // fully open-ended "bytes=0-" - is not. Add one whenever the request doesn't
+                    // already carry its own (e.g. a resumed download continuing past position 0).
+                    if (request.header("Range") == null) {
+                        requestBuilder.header("Range", "bytes=0-")
+                    }
+                    val response = chain.proceed(requestBuilder.build())
                     if (response.code in STREAM_REFRESH_RESPONSE_CODES) {
                         invalidateResolvedStreamUrl(request.url.toString())
                     }
