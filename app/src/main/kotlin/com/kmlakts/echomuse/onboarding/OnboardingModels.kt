@@ -78,7 +78,6 @@ data class OnboardingPermissionData(
 enum class OnboardingPermissionId {
     NOTIFICATIONS,
     LOCAL_AUDIO,
-    MICROPHONE,
     DEVICE_AUDIO_CAPTURE,
     BLUETOOTH_CONNECT,
     NETWORK,

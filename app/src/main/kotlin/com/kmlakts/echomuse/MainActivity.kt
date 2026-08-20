@@ -234,9 +234,6 @@ import moe.rukamori.archivetune.innertube.models.ArtistItem
 import moe.rukamori.archivetune.innertube.models.PlaylistItem
 import moe.rukamori.archivetune.innertube.models.SongItem
 import com.kmlakts.echomuse.models.toMediaMetadata
-import com.kmlakts.echomuse.musicrecognition.ACTION_MUSIC_RECOGNITION
-import com.kmlakts.echomuse.musicrecognition.MusicRecognitionRoute
-import com.kmlakts.echomuse.musicrecognition.openMusicRecognition
 import com.kmlakts.echomuse.onboarding.OnboardingScreenState
 import com.kmlakts.echomuse.onboarding.OnboardingViewModel
 import com.kmlakts.echomuse.playback.DownloadUtil
@@ -945,11 +942,6 @@ class MainActivity : ComponentActivity() {
                                 else -> null
                             }
                         }
-                    val launchMusicRecognitionFromShortcut =
-                        remember {
-                            intent?.action == ACTION_MUSIC_RECOGNITION
-                        }
-
                     val topLevelScreens =
                         remember(navigationItems) {
                             navigationItems.map(Screens::route) + "settings"
@@ -2233,9 +2225,6 @@ class MainActivity : ComponentActivity() {
                                                         }
                                                     }
                                                 },
-                                                onMusicRecognitionClick = {
-                                                    navController.navigate(MusicRecognitionRoute)
-                                                },
                                                 onMusicTogetherClick = {
                                                     navController.navigate("settings/music_together")
                                                 },
@@ -2275,14 +2264,10 @@ class MainActivity : ComponentActivity() {
                                 NavHost(
                                     navController = navController,
                                     startDestination =
-                                        if (launchMusicRecognitionFromShortcut) {
-                                            MusicRecognitionRoute
-                                        } else {
-                                            when (tabOpenedFromShortcut ?: defaultOpenTab) {
-                                                NavigationTab.HOME -> Screens.Home.route
-                                                NavigationTab.LIBRARY -> Screens.Library.route
-                                                else -> Screens.Home.route
-                                            }
+                                        when (tabOpenedFromShortcut ?: defaultOpenTab) {
+                                            NavigationTab.HOME -> Screens.Home.route
+                                            NavigationTab.LIBRARY -> Screens.Library.route
+                                            else -> Screens.Home.route
                                         },
                                     enterTransition = {
                                         if (disableAnimations) {
@@ -2479,10 +2464,6 @@ class MainActivity : ComponentActivity() {
         val dataUri = intent.data
         if (isBackupUri(dataUri)) {
             pendingBackupRestoreUri = dataUri
-            return
-        }
-        if (intent.action == ACTION_MUSIC_RECOGNITION) {
-            navController.openMusicRecognition(0L)
             return
         }
         if (intent.action == ACTION_AOD_MODE) {
@@ -2929,7 +2910,6 @@ private fun HomeOverflowFab(
     pureBlack: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onShuffleClick: () -> Unit,
-    onMusicRecognitionClick: () -> Unit,
     onMusicTogetherClick: () -> Unit,
 ) {
     val menuItemColors =
@@ -2963,21 +2943,6 @@ private fun HomeOverflowFab(
             containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainerHigh,
             tonalElevation = 6.dp,
         ) {
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.music_recognition)) },
-                onClick = {
-                    onExpandedChange(false)
-                    onMusicRecognitionClick()
-                },
-                leadingIcon = {
-                    HomeOverflowMenuIcon(
-                        iconRes = R.drawable.mic,
-                        contentDescription = stringResource(R.string.music_recognition),
-                        pureBlack = pureBlack,
-                    )
-                },
-                colors = menuItemColors,
-            )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.music_together)) },
                 onClick = {

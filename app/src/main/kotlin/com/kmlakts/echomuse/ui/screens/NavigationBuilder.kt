@@ -26,8 +26,6 @@ import androidx.navigation.navArgument
 import com.kmlakts.echomuse.BuildConfig
 import com.kmlakts.echomuse.constants.UpdateChannel
 import com.kmlakts.echomuse.defaultUpdateChannel
-import com.kmlakts.echomuse.musicrecognition.MusicRecognitionRoute
-import com.kmlakts.echomuse.musicrecognition.MusicRecognitionDetailsRoute
 import com.kmlakts.echomuse.ui.screens.BrowseScreen
 import com.kmlakts.echomuse.ui.screens.artist.ArtistAlbumsScreen
 import com.kmlakts.echomuse.ui.screens.artist.ArtistItemsScreen
@@ -35,8 +33,6 @@ import com.kmlakts.echomuse.ui.screens.artist.ArtistScreen
 import com.kmlakts.echomuse.ui.screens.artist.ArtistSongsScreen
 import com.kmlakts.echomuse.ui.screens.library.LibraryScreen
 import com.kmlakts.echomuse.ui.screens.library.LocalSongScreen
-import com.kmlakts.echomuse.ui.screens.musicrecognition.MusicRecognitionScreen
-import com.kmlakts.echomuse.ui.screens.musicrecognition.MusicRecognitionDetailsScreen
 import com.kmlakts.echomuse.ui.screens.playlist.AutoPlaylistScreen
 import com.kmlakts.echomuse.ui.screens.playlist.CachePlaylistScreen
 import com.kmlakts.echomuse.ui.screens.playlist.LocalPlaylistScreen
@@ -141,13 +137,6 @@ fun NavGraphBuilder.navigationBuilder(
             navController = navController,
             initialYear = selectedYear,
         )
-    }
-    composable(MusicRecognitionRoute) {
-        MusicRecognitionScreen(navController)
-    }
-    composable(MusicRecognitionDetailsRoute) { backStackEntry ->
-        val encodedTrack = backStackEntry.arguments?.getString("encodedTrack").orEmpty()
-        MusicRecognitionDetailsScreen(navController, encodedTrack)
     }
     composable(Screens.MoodAndGenres.route) {
         MoodAndGenresScreen(navController)

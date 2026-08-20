@@ -76,10 +76,6 @@ class BuildOnboardingUiStateUseCase
                     R.string.permission_storage_title
                 }
 
-                OnboardingPermissionId.MICROPHONE -> {
-                    R.string.music_recognition_permission_title
-                }
-
                 OnboardingPermissionId.DEVICE_AUDIO_CAPTURE -> {
                     R.string.onboarding_permission_device_audio_capture_title
                 }
@@ -119,10 +115,6 @@ class BuildOnboardingUiStateUseCase
                     R.string.permission_storage_desc
                 }
 
-                OnboardingPermissionId.MICROPHONE -> {
-                    R.string.music_recognition_permission_desc
-                }
-
                 OnboardingPermissionId.DEVICE_AUDIO_CAPTURE -> {
                     R.string.onboarding_permission_device_audio_capture_desc
                 }
@@ -156,7 +148,6 @@ class BuildOnboardingUiStateUseCase
             when (this) {
                 OnboardingPermissionId.NOTIFICATIONS -> R.drawable.music_note
                 OnboardingPermissionId.LOCAL_AUDIO -> R.drawable.storage
-                OnboardingPermissionId.MICROPHONE -> R.drawable.mic
                 OnboardingPermissionId.DEVICE_AUDIO_CAPTURE -> R.drawable.screenshot
                 OnboardingPermissionId.BLUETOOTH_CONNECT -> R.drawable.bluetooth
                 OnboardingPermissionId.NETWORK -> R.drawable.wifi_proxy

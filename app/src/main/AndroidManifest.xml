@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -183,12 +182,6 @@
         </activity>
 
         <activity
-            android:name=".musicrecognition.MusicRecognitionTileActionActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:theme="@style/Theme.Echomuse.Transparent" />
-
-        <activity
             android:name=".RestoreBackupFileActivity"
             android:exported="true"
             android:theme="@style/Theme.Echomuse"
@@ -243,17 +236,6 @@
             android:name="androidx.media3.exoplayer.scheduler.PlatformScheduler$PlatformSchedulerService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <service
-            android:name=".musicrecognition.MusicRecognitionTileService"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:exported="true"
-            android:icon="@drawable/mic"
-            android:label="@string/music_recognition">
-            <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
-            </intent-filter>
-        </service>
 
         <service
             android:name=".aod.AodModeTileService"

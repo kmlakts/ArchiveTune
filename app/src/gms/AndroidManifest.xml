@@ -12,19 +12,6 @@
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <application>
-        <activity
-
-            android:name=".musicrecognition.MusicRecognitionCaptureActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:theme="@style/Theme.Echomuse.Transparent" />
-
-        <service
-            android:name=".musicrecognition.BackgroundMusicRecognitionService"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection|microphone"
-            android:stopWithTask="false" />
-
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="com.kmlakts.echomuse.cast.EchomuseCastOptionsProvider" />
