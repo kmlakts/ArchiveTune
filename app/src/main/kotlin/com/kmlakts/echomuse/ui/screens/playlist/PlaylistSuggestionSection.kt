@@ -56,6 +56,7 @@ import com.kmlakts.echomuse.ui.component.IconButton
 import com.kmlakts.echomuse.ui.component.NavigationTitle
 import com.kmlakts.echomuse.ui.component.YouTubeListItem
 import com.kmlakts.echomuse.viewmodels.LocalPlaylistViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun PlaylistSuggestionsSection(
@@ -66,11 +67,11 @@ fun PlaylistSuggestionsSection(
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current
-    val isPlaying by playerConnection?.isPlaying?.collectAsState() ?: androidx.compose.runtime.mutableStateOf(false)
-    val mediaMetadata by playerConnection?.mediaMetadata?.collectAsState() ?: androidx.compose.runtime.mutableStateOf(null)
+    val isPlaying by playerConnection?.isPlaying?.collectAsStateWithLifecycle() ?: androidx.compose.runtime.mutableStateOf(false)
+    val mediaMetadata by playerConnection?.mediaMetadata?.collectAsStateWithLifecycle() ?: androidx.compose.runtime.mutableStateOf(null)
 
-    val playlistSuggestions by viewModel.playlistSuggestions.collectAsState()
-    val isLoading by viewModel.isLoadingSuggestions.collectAsState()
+    val playlistSuggestions by viewModel.playlistSuggestions.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoadingSuggestions.collectAsStateWithLifecycle()
 
     // State for duplicate check dialog
     var showDuplicateDialog by remember { mutableStateOf(false) }

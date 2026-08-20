@@ -64,6 +64,7 @@ import com.kmlakts.echomuse.ui.component.shimmer.ShimmerHost
 import com.kmlakts.echomuse.ui.component.shimmer.TextPlaceholder
 import com.kmlakts.echomuse.viewmodels.MoodAndGenresViewModel
 import java.util.concurrent.ConcurrentHashMap
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -71,7 +72,7 @@ fun MoodAndGenresScreen(
     navController: NavController,
     viewModel: MoodAndGenresViewModel = hiltViewModel(),
 ) {
-    val moodAndGenres by viewModel.moodAndGenres.collectAsState()
+    val moodAndGenres by viewModel.moodAndGenres.collectAsStateWithLifecycle()
     val gridState = rememberLazyGridState()
     val density = LocalDensity.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
@@ -79,7 +80,7 @@ fun MoodAndGenresScreen(
     val bottomPadding = with(density) { windowInsets.getBottom(this).toDp() }
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
-        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsStateWithLifecycle()
 
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {

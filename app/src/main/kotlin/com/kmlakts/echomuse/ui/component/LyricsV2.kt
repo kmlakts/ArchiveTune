@@ -143,6 +143,7 @@ import com.kmlakts.echomuse.utils.rememberPreference
 import com.kmlakts.echomuse.utils.reportException
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 // ──────────────────────────────────────────────────────────────────────
 // Constants
@@ -199,7 +200,7 @@ fun LyricsV2(
     val density = LocalDensity.current
     val scope = rememberCoroutineScope()
 
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
     // ── Preferences ──
     val (lyricsClick) = rememberPreference(LyricsClickKey, defaultValue = true)
@@ -836,7 +837,7 @@ fun LyricsV2(
                     ) {
                         val romanizedText =
                             if (romanizationPreferences.isEnabled) {
-                                val value by item.romanizedTextFlow.collectAsState()
+                                val value by item.romanizedTextFlow.collectAsStateWithLifecycle()
                                 value
                             } else {
                                 null

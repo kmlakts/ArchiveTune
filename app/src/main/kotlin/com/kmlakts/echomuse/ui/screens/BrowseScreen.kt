@@ -44,6 +44,7 @@ import com.kmlakts.echomuse.ui.menu.YouTubeArtistMenu
 import com.kmlakts.echomuse.ui.menu.YouTubePlaylistMenu
 import com.kmlakts.echomuse.ui.utils.backToMain
 import com.kmlakts.echomuse.viewmodels.BrowseViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -55,11 +56,11 @@ fun BrowseScreen(
 ) {
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
-    val title by viewModel.title.collectAsState()
-    val items by viewModel.items.collectAsState()
+    val title by viewModel.title.collectAsStateWithLifecycle()
+    val items by viewModel.items.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
 

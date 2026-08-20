@@ -153,9 +153,9 @@ class AodDreamService :
                     AodPlayerScreen(
                         mediaMetadata = metadata,
                         isPlaying = isPlaying,
-                        position = currentPos,
-                        duration = songDuration,
-                        sliderPosition = sliderPos,
+                        positionProvider = { currentPos },
+                        durationProvider = { songDuration },
+                        sliderPositionProvider = { sliderPos },
                         canSkipPrevious = canSkipPrev,
                         canSkipNext = canSkipNxt,
                         thumbnailCornerRadius = 16f,

@@ -141,6 +141,7 @@ import com.kmlakts.echomuse.utils.makeTimeString
 import com.kmlakts.echomuse.utils.rememberPreference
 import com.kmlakts.echomuse.utils.reportException
 import kotlin.math.roundToInt
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 const val ActiveBoxAlpha = 0.6f
 
@@ -1374,7 +1375,7 @@ fun YouTubeListItem(
             Icon.Library()
         }
         if (item is SongItem) {
-            val downloads by LocalDownloadUtil.current.downloads.collectAsState()
+            val downloads by LocalDownloadUtil.current.downloads.collectAsStateWithLifecycle()
             val download = downloads[item.id]
             Icon.Download(download?.state, percent = download?.percentDownloaded ?: -1f)
         }
@@ -1468,7 +1469,7 @@ fun YouTubeGridItem(
         if (item.explicit) Icon.Explicit()
         if (item is SongItem && song?.song?.inLibrary != null) Icon.Library()
         if (item is SongItem) {
-            val downloads by LocalDownloadUtil.current.downloads.collectAsState()
+            val downloads by LocalDownloadUtil.current.downloads.collectAsStateWithLifecycle()
             val download = downloads[item.id]
             Icon.Download(download?.state, percent = download?.percentDownloaded ?: -1f)
         }

@@ -59,6 +59,7 @@ import com.kmlakts.echomuse.ui.menu.YouTubeSongMenu
 import com.kmlakts.echomuse.ui.utils.SnapLayoutInfoProvider
 import com.kmlakts.echomuse.viewmodels.ChartsViewModel
 import com.kmlakts.echomuse.viewmodels.ExploreViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -70,12 +71,12 @@ fun ExploreScreen(
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
-    val explorePage by exploreViewModel.explorePage.collectAsState()
-    val chartsPage by chartsViewModel.chartsPage.collectAsState()
-    val isChartsLoading by chartsViewModel.isLoading.collectAsState()
+    val explorePage by exploreViewModel.explorePage.collectAsStateWithLifecycle()
+    val chartsPage by chartsViewModel.chartsPage.collectAsStateWithLifecycle()
+    val isChartsLoading by chartsViewModel.isLoading.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -84,7 +85,7 @@ fun ExploreScreen(
     val scrollToTop by backStackEntry
         ?.savedStateHandle
         ?.getStateFlow("scrollToTop", false)
-        ?.collectAsState() ?: return
+        ?.collectAsStateWithLifecycle() ?: return
 
     LaunchedEffect(Unit) {
         if (chartsPage == null) {

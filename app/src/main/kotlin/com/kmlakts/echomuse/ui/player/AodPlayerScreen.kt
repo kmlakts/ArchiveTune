@@ -218,9 +218,9 @@ private fun AodLyricsTickerData.textAt(position: Long): String? {
 fun AodPlayerScreen(
     mediaMetadata: MediaMetadata,
     isPlaying: Boolean,
-    position: Long,
-    duration: Long,
-    sliderPosition: Long?,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
+    sliderPositionProvider: () -> Long?,
     canSkipPrevious: Boolean,
     canSkipNext: Boolean,
     thumbnailCornerRadius: Float,
@@ -235,6 +235,9 @@ fun AodPlayerScreen(
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current
+    val position = positionProvider()
+    val duration = durationProvider()
+    val sliderPosition = sliderPositionProvider()
     val (thumbnailShapeType) = rememberEnumPreference(AodThumbnailShapeKey, AodThumbnailShape.ROUNDED)
     val (thumbnailSize) = rememberPreference(AodThumbnailSizeKey, 260f)
     val (thumbnailShapeRotation) = rememberPreference(AodThumbnailShapeRotationKey, 0)
@@ -687,9 +690,9 @@ fun AodPlayerScreen(
             ) {
                 if (showProgress) {
                     AodSliderSection(
-                        position = position,
-                        duration = duration,
-                        sliderPosition = sliderPosition,
+                        positionProvider = positionProvider,
+                        durationProvider = durationProvider,
+                        sliderPositionProvider = sliderPositionProvider,
                         accentColor = accentColor,
                         showTimeLabels = showTimeLabels,
                         onSeek = {
@@ -770,16 +773,17 @@ fun AodPlayerScreen(
 
 @Composable
 private fun AodSliderSection(
-    position: Long,
-    duration: Long,
-    sliderPosition: Long?,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
+    sliderPositionProvider: () -> Long?,
     accentColor: Color,
     showTimeLabels: Boolean,
     onSeek: (Long) -> Unit,
     onSeekFinished: () -> Unit,
 ) {
+    val duration = durationProvider()
     val seekEnabled = duration > 0L && duration != C.TIME_UNSET
-    val displayPosition = sliderPosition ?: position
+    val displayPosition = sliderPositionProvider() ?: positionProvider()
     val sliderValue =
         remember(displayPosition, seekEnabled) {
             if (seekEnabled) displayPosition.toFloat() else 0f

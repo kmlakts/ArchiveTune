@@ -60,6 +60,7 @@ import com.kmlakts.echomuse.ui.utils.backToMain
 import com.kmlakts.echomuse.utils.rememberEnumPreference
 import com.kmlakts.echomuse.utils.rememberPreference
 import com.kmlakts.echomuse.viewmodels.ArtistSongsViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -72,8 +73,8 @@ fun ArtistSongsScreen(
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
     val (sortType, onSortTypeChange) =
         rememberEnumPreference(
@@ -86,8 +87,8 @@ fun ArtistSongsScreen(
             true,
         )
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
-    val artist by viewModel.artist.collectAsState()
-    val songs by viewModel.songs.collectAsState()
+    val artist by viewModel.artist.collectAsStateWithLifecycle()
+    val songs by viewModel.songs.collectAsStateWithLifecycle()
     val lazyListState = rememberLazyListState()
 
     Box(

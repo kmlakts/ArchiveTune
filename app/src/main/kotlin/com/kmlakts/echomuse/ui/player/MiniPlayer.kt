@@ -57,15 +57,15 @@ private const val MiniPlayerPaletteCacheSize = 24
 
 @Composable
 fun MiniPlayer(
-    position: Long,
-    duration: Long,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
     modifier: Modifier = Modifier,
     pureBlack: Boolean,
     isPairedWithNavigation: Boolean = false,
 ) {
     NewMiniPlayer(
-        position = position,
-        duration = duration,
+        positionProvider = positionProvider,
+        durationProvider = durationProvider,
         modifier = modifier,
         pureBlack = pureBlack,
         isPairedWithNavigation = isPairedWithNavigation,
@@ -74,8 +74,8 @@ fun MiniPlayer(
 
 @Composable
 private fun NewMiniPlayer(
-    position: Long,
-    duration: Long,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
     modifier: Modifier = Modifier,
     pureBlack: Boolean,
     isPairedWithNavigation: Boolean,
@@ -217,8 +217,8 @@ private fun NewMiniPlayer(
                 modifier = Modifier.fillMaxSize(),
             )
             NewMiniPlayerContent(
-                position = position,
-                duration = duration,
+                positionProvider = positionProvider,
+                durationProvider = durationProvider,
                 playerConnection = playerConnection,
                 colors = contentColors,
             )

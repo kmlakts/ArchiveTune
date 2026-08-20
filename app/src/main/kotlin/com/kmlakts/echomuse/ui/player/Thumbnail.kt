@@ -114,6 +114,7 @@ import com.kmlakts.echomuse.utils.rememberLowDataModeActive
 import com.kmlakts.echomuse.utils.rememberPreference
 import java.util.Locale
 import kotlin.math.abs
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 private data class ThumbnailPage(
     val slotKey: String,
@@ -132,9 +133,9 @@ fun Thumbnail(
     val context = LocalContext.current
 
     // States
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val queueTitle by playerConnection.queueTitle.collectAsState()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val queueTitle by playerConnection.queueTitle.collectAsStateWithLifecycle()
 
     val swipeThumbnail by rememberPreference(SwipeThumbnailKey, true)
 
@@ -162,8 +163,8 @@ fun Thumbnail(
     val (disableBlur) = rememberPreference(DisableBlurKey, false)
     val (backdropEnabled) = rememberPreference(BackdropEnabledKey, defaultValue = true)
     val (backdropBlurAmount) = rememberPreference(BackdropBlurAmountKey, defaultValue = 60)
-    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
-    val canSkipNext by playerConnection.canSkipNext.collectAsState()
+    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsStateWithLifecycle()
+    val canSkipNext by playerConnection.canSkipNext.collectAsStateWithLifecycle()
 
     // Player background style for consistent theming
     val playerBackground by rememberEnumPreference(

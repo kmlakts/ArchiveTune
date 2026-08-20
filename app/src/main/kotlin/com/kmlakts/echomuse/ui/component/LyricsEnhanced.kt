@@ -143,6 +143,7 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 private const val LRC_LEAD_MS = 300L
 private const val TTML_LEAD_MS = 0L
@@ -174,8 +175,8 @@ fun LyricsEnhanced(
     val context = LocalContext.current
     val animationsDisabled = LocalAnimationsDisabled.current
 
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-    val playbackParameters by playerConnection.playbackParameters.collectAsState()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
+    val playbackParameters by playerConnection.playbackParameters.collectAsStateWithLifecycle()
 
     val (lyricsClick) = rememberPreference(LyricsClickKey, defaultValue = true)
     val (lyricsTextSize) = rememberPreference(LyricsTextSizeKey, defaultValue = 26f)

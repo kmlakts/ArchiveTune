@@ -136,6 +136,7 @@ import com.kmlakts.echomuse.ui.utils.highRes
 import com.kmlakts.echomuse.utils.makeTimeString
 import com.kmlakts.echomuse.utils.rememberLowDataModeActive
 import com.kmlakts.echomuse.utils.rememberPreference
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 private const val PlayerBackgroundMaxBlurRadius = 64f
 private const val ExplicitBadgeInlineId = "explicitBadge"
@@ -271,7 +272,7 @@ fun PlayerTopActions(
     currentSongLiked: Boolean,
 ) {
     val haptic = LocalHapticFeedback.current
-    val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsState()
+    val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsStateWithLifecycle()
 
     when (playerDesignStyle) {
         PlayerDesignStyle.V2 -> {
@@ -721,16 +722,17 @@ fun PlayerTopActions(
 @Composable
 fun PlayerSlider(
     sliderStyle: SliderStyle,
-    sliderPosition: Long?,
-    position: Long,
-    duration: Long,
+    sliderPositionProvider: () -> Long?,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
     isPlaying: Boolean,
     textButtonColor: Color,
     onValueChange: (Long) -> Unit,
     onValueChangeFinished: () -> Unit,
 ) {
+    val duration = durationProvider()
     val safeDuration = if (duration <= 0L) 0f else duration.toFloat()
-    val safeValue = (sliderPosition ?: position).toFloat().coerceIn(0f, maxOf(0f, safeDuration))
+    val safeValue = (sliderPositionProvider() ?: positionProvider()).toFloat().coerceIn(0f, maxOf(0f, safeDuration))
 
     StyledPlaybackSlider(
         sliderStyle = sliderStyle,
@@ -842,13 +844,16 @@ fun StyledPlaybackSlider(
 
 @Composable
 fun PlayerTimeLabel(
-    sliderPosition: Long?,
-    position: Long,
-    duration: Long,
+    sliderPositionProvider: () -> Long?,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
     textBackgroundColor: Color,
     showRemainingTime: Boolean = false,
     centerContent: @Composable (() -> Unit)? = null,
 ) {
+    val sliderPosition = sliderPositionProvider()
+    val position = positionProvider()
+    val duration = durationProvider()
     Box(
         modifier =
             Modifier
@@ -912,7 +917,7 @@ fun PlayerPlaybackControls(
     currentSongLiked: Boolean,
 ) {
     val haptic = LocalHapticFeedback.current
-    val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsState()
+    val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsStateWithLifecycle()
     val view = LocalView.current
     val (enableHapticFeedback) = rememberPreference(EnableHapticFeedbackKey, true)
 
@@ -1857,9 +1862,9 @@ fun PlayerControlsContent(
 
     PlayerSlider(
         sliderStyle = sliderStyle,
-        sliderPosition = sliderPosition,
-        position = position,
-        duration = duration,
+        sliderPositionProvider = { sliderPosition },
+        positionProvider = { position },
+        durationProvider = { duration },
         isPlaying = isPlaying,
         textButtonColor = textButtonColor,
         onValueChange = onSliderValueChange,
@@ -1869,9 +1874,9 @@ fun PlayerControlsContent(
     Spacer(Modifier.height(4.dp))
 
     PlayerTimeLabel(
-        sliderPosition = sliderPosition,
-        position = position,
-        duration = duration,
+        sliderPositionProvider = { sliderPosition },
+        positionProvider = { position },
+        durationProvider = { duration },
         textBackgroundColor = textBackgroundColor,
         showRemainingTime = playerDesignStyle == PlayerDesignStyle.V7,
         centerContent =
@@ -2062,9 +2067,9 @@ fun V8PlayerControlsContent(
             Spacer(Modifier.height(contentGap))
 
             V8PlaybackProgress(
-                sliderPosition = sliderPosition,
-                position = position,
-                duration = duration,
+                sliderPositionProvider = { sliderPosition },
+                positionProvider = { position },
+                durationProvider = { duration },
                 currentFormat = currentFormat,
                 foreground = foreground,
                 onSliderValueChange = onSliderValueChange,
@@ -2370,9 +2375,9 @@ private fun V8PortraitContent(
             Spacer(Modifier.height(controlsGap))
 
             V8PlaybackProgress(
-                sliderPosition = sliderPosition,
-                position = position,
-                duration = duration,
+                sliderPositionProvider = { sliderPosition },
+                positionProvider = { position },
+                durationProvider = { duration },
                 currentFormat = currentFormat,
                 foreground = foreground,
                 onSliderValueChange = onSliderValueChange,
@@ -2499,9 +2504,9 @@ private fun V8LandscapeContent(
                 Spacer(Modifier.height(18.dp))
 
                 V8PlaybackProgress(
-                    sliderPosition = sliderPosition,
-                    position = position,
-                    duration = duration,
+                    sliderPositionProvider = { sliderPosition },
+                    positionProvider = { position },
+                    durationProvider = { duration },
                     currentFormat = currentFormat,
                     foreground = foreground,
                     onSliderValueChange = onSliderValueChange,
@@ -2708,14 +2713,17 @@ private fun V8ActionButton(
 
 @Composable
 private fun V8PlaybackProgress(
-    sliderPosition: Long?,
-    position: Long,
-    duration: Long,
+    sliderPositionProvider: () -> Long?,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
     currentFormat: FormatEntity?,
     foreground: Color,
     onSliderValueChange: (Long) -> Unit,
     onSliderValueChangeFinished: () -> Unit,
 ) {
+    val sliderPosition = sliderPositionProvider()
+    val position = positionProvider()
+    val duration = durationProvider()
     val safeDuration = if (duration <= 0L || duration == C.TIME_UNSET) 0f else duration.toFloat()
     val safeValue = (sliderPosition ?: position).toFloat().coerceIn(0f, safeDuration.coerceAtLeast(0f))
 
@@ -3017,9 +3025,9 @@ fun V9PlayerContent(
     isLoading: Boolean,
     canSkipPrevious: Boolean,
     canSkipNext: Boolean,
-    sliderPosition: Long?,
-    position: Long,
-    duration: Long,
+    sliderPositionProvider: () -> Long?,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
     playerConnection: PlayerConnection,
     navController: NavController,
     state: BottomSheetState,
@@ -3037,6 +3045,9 @@ fun V9PlayerContent(
     landscape: Boolean = false,
     gradientColors: List<Color> = emptyList(),
 ) {
+    val sliderPosition = sliderPositionProvider()
+    val position = positionProvider()
+    val duration = durationProvider()
     val baseArtworkUrl = mediaMetadata.thumbnailUrl?.highRes()
     val thumbnailSwapState =
         rememberThumbnailSwapState(
@@ -3058,8 +3069,8 @@ fun V9PlayerContent(
         }
     }
 
-    val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsState()
-    val repeatMode by playerConnection.repeatMode.collectAsState()
+    val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsStateWithLifecycle()
+    val repeatMode by playerConnection.repeatMode.collectAsStateWithLifecycle()
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
     val liked = currentSong?.song?.liked == true
     val onToggleLike = playerConnection::toggleLike
@@ -3471,9 +3482,9 @@ private fun V9LandscapeContent(
                 Spacer(Modifier.height(12.dp))
 
                 V9PlaybackProgress(
-                    sliderPosition = sliderPosition,
-                    position = position,
-                    duration = duration,
+                    sliderPositionProvider = { sliderPosition },
+                    positionProvider = { position },
+                    durationProvider = { duration },
                     isPlaying = isPlaying,
                     activeColor = textButtonColor,
                     inactiveColor = textButtonColor.copy(alpha = 0.24f),
@@ -3696,9 +3707,9 @@ private fun V9Metadata(
 
 @Composable
 private fun V9PlaybackProgress(
-    sliderPosition: Long?,
-    position: Long,
-    duration: Long,
+    sliderPositionProvider: () -> Long?,
+    positionProvider: () -> Long,
+    durationProvider: () -> Long,
     isPlaying: Boolean,
     activeColor: Color,
     inactiveColor: Color,
@@ -3706,9 +3717,11 @@ private fun V9PlaybackProgress(
     onSliderValueChange: (Long) -> Unit,
     onSliderValueChangeFinished: () -> Unit,
 ) {
+    val sliderPosition = sliderPositionProvider()
+    val duration = durationProvider()
     val (smoothProgressFraction, displayedPosition) = rememberSmoothProgress(
         isPlayingProvider = { isPlaying },
-        currentPositionProvider = { sliderPosition ?: position },
+        currentPositionProvider = { sliderPositionProvider() ?: positionProvider() },
         totalDuration = duration.coerceAtLeast(0L),
         isVisible = true
     )

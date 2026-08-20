@@ -49,6 +49,7 @@ import com.kmlakts.echomuse.ui.menu.YouTubePlaylistMenu
 import com.kmlakts.echomuse.ui.utils.backToMain
 import com.kmlakts.echomuse.viewmodels.AccountContentType
 import com.kmlakts.echomuse.viewmodels.AccountViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -62,10 +63,10 @@ fun AccountScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val playlists by viewModel.playlists.collectAsState()
-    val albums by viewModel.albums.collectAsState()
-    val artists by viewModel.artists.collectAsState()
-    val selectedContentType by viewModel.selectedContentType.collectAsState()
+    val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+    val albums by viewModel.albums.collectAsStateWithLifecycle()
+    val artists by viewModel.artists.collectAsStateWithLifecycle()
+    val selectedContentType by viewModel.selectedContentType.collectAsStateWithLifecycle()
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = GridThumbnailHeight + 24.dp),

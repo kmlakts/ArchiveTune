@@ -82,6 +82,7 @@ import com.kmlakts.echomuse.ui.utils.backToMain
 import com.kmlakts.echomuse.utils.makeTimeString
 import com.kmlakts.echomuse.utils.rememberPreference
 import kotlin.math.roundToInt
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -200,7 +201,7 @@ private fun NerdStatsSection(playerConnection: com.kmlakts.echomuse.playback.Pla
     if (playerConnection == null) return
 
     val currentFormat by playerConnection.currentFormat.collectAsState(initial = null)
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
     val player = playerConnection.player
 
     var bufferPercentage by remember { mutableStateOf(0) }

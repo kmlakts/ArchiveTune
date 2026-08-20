@@ -90,6 +90,7 @@ import com.kmlakts.echomuse.ui.menu.ArtistMenu
 import com.kmlakts.echomuse.utils.rememberEnumPreference
 import com.kmlakts.echomuse.utils.rememberPreference
 import com.kmlakts.echomuse.viewmodels.LibraryArtistsViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -122,8 +123,8 @@ fun LibraryArtistsScreen(
         }
     }
 
-    val artists by viewModel.allArtists.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val artists by viewModel.allArtists.collectAsStateWithLifecycle()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
 
     val topArtist = artists.firstOrNull()
 

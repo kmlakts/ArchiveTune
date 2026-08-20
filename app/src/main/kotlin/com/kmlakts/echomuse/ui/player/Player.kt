@@ -420,15 +420,15 @@ fun BottomSheetPlayer(
             MaterialTheme.colorScheme.surfaceContainer.copy(alpha = progress)
         }
 
-    val playbackState by playerConnection.playbackState.collectAsState()
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val playbackState by playerConnection.playbackState.collectAsStateWithLifecycle()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
     val currentSongLiked = currentSong?.song?.liked == true
-    val queueTitle by playerConnection.queueTitle.collectAsState()
+    val queueTitle by playerConnection.queueTitle.collectAsStateWithLifecycle()
     val currentFormat by playerConnection.currentFormat.collectAsState(initial = null)
-    val queueWindows by playerConnection.queueWindows.collectAsState()
-    val currentWindowIndex by playerConnection.currentWindowIndex.collectAsState()
+    val queueWindows by playerConnection.queueWindows.collectAsStateWithLifecycle()
+    val currentWindowIndex by playerConnection.currentWindowIndex.collectAsStateWithLifecycle()
     val deviceMusicVolumeController = rememberDeviceMusicVolumeController()
     val onPlayerVolumeChange =
         remember(deviceMusicVolumeController) {
@@ -437,10 +437,10 @@ fun BottomSheetPlayer(
             }
         }
 
-    val repeatMode by playerConnection.repeatMode.collectAsState()
+    val repeatMode by playerConnection.repeatMode.collectAsStateWithLifecycle()
 
-    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
-    val canSkipNext by playerConnection.canSkipNext.collectAsState()
+    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsStateWithLifecycle()
+    val canSkipNext by playerConnection.canSkipNext.collectAsStateWithLifecycle()
 
     val aodModeEnabled by playerConnection.aodModeEnabled.collectAsStateWithLifecycle()
     val currentLyricsEntity by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
@@ -1069,8 +1069,8 @@ fun BottomSheetPlayer(
         backHandlerEnabled = !aodModeEnabled,
         collapsedContent = {
             MiniPlayer(
-                position = position,
-                duration = duration,
+                positionProvider = { position },
+                durationProvider = { duration },
                 pureBlack = pureBlack,
                 isPairedWithNavigation = isMiniPlayerPairedWithNavigation,
             )
@@ -1357,9 +1357,9 @@ fun BottomSheetPlayer(
                             enrichedMetadata?.let { metadata ->
                                 LittlePlayerContent(
                                     mediaMetadata = metadata,
-                                    sliderPosition = sliderPosition,
-                                    positionMs = position,
-                                    durationMs = duration,
+                                    sliderPositionProvider = { sliderPosition },
+                                    positionMsProvider = { position },
+                                    durationMsProvider = { duration },
                                     textColor = littleTextColor,
                                     liked = currentSongLiked,
                                     onCollapse = state::collapseSoft,
@@ -1513,9 +1513,9 @@ fun BottomSheetPlayer(
                             isLoading = isLoading,
                             canSkipPrevious = canSkipPrevious,
                             canSkipNext = canSkipNext,
-                            sliderPosition = sliderPosition,
-                            position = position,
-                            duration = duration,
+                            sliderPositionProvider = { sliderPosition },
+                            positionProvider = { position },
+                            durationProvider = { duration },
                             playerConnection = playerConnection,
                             navController = navController,
                             state = state,
@@ -1634,9 +1634,9 @@ fun BottomSheetPlayer(
                                 LandscapeLikeBox(modifier = Modifier.fillMaxSize()) {
                                     LittlePlayerContent(
                                         mediaMetadata = metadata,
-                                        sliderPosition = sliderPosition,
-                                        positionMs = position,
-                                        durationMs = duration,
+                                        sliderPositionProvider = { sliderPosition },
+                                        positionMsProvider = { position },
+                                        durationMsProvider = { duration },
                                         textColor = littleTextColor,
                                         liked = currentSongLiked,
                                         onCollapse = state::collapseSoft,
@@ -1788,9 +1788,9 @@ fun BottomSheetPlayer(
                             isLoading = isLoading,
                             canSkipPrevious = canSkipPrevious,
                             canSkipNext = canSkipNext,
-                            sliderPosition = sliderPosition,
-                            position = position,
-                            duration = duration,
+                            sliderPositionProvider = { sliderPosition },
+                            positionProvider = { position },
+                            durationProvider = { duration },
                             playerConnection = playerConnection,
                             navController = navController,
                             state = state,
@@ -1914,9 +1914,9 @@ fun BottomSheetPlayer(
             AodPlayerScreen(
                 mediaMetadata = metadata,
                 isPlaying = isPlaying,
-                position = position,
-                duration = duration,
-                sliderPosition = sliderPosition,
+                positionProvider = { position },
+                durationProvider = { duration },
+                sliderPositionProvider = { sliderPosition },
                 canSkipPrevious = canSkipPrevious,
                 canSkipNext = canSkipNext,
                 thumbnailCornerRadius = thumbnailCornerRadius,
@@ -2560,9 +2560,9 @@ private data class V7PlayerBackdropState(
 @Composable
 private fun LittlePlayerContent(
     mediaMetadata: MediaMetadata,
-    sliderPosition: Long?,
-    positionMs: Long,
-    durationMs: Long,
+    sliderPositionProvider: () -> Long?,
+    positionMsProvider: () -> Long,
+    durationMsProvider: () -> Long,
     textColor: Color,
     liked: Boolean,
     onCollapse: () -> Unit,
@@ -2586,7 +2586,8 @@ private fun LittlePlayerContent(
         val horizontalPadding = (18f * scale).dp
         val verticalPadding = (10f * scale).dp
 
-        val displayPositionMs = sliderPosition ?: positionMs
+        val durationMs = durationMsProvider()
+        val displayPositionMs = sliderPositionProvider() ?: positionMsProvider()
 
         val timeText =
             remember(displayPositionMs, durationMs) {

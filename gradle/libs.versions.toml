@@ -44,10 +44,12 @@ accompanist = "1.0.19"
 accompanist-core = "0.4.7"
 androidsvg = "1.4"
 aboutLibraries = "15.0.3"
+profileinstaller = "1.4.1"
 
 
 [libraries]
 annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
+profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "coroutinesGuava" }
 concurrent-futures = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "concurrentFutures" }

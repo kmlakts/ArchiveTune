@@ -121,6 +121,7 @@ import java.text.Collator
 import java.time.LocalDateTime
 import java.util.Locale
 import kotlin.math.roundToInt
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(
     ExperimentalFoundationApi::class,
@@ -136,10 +137,10 @@ fun LocalSongScreen(
     val haptic = LocalHapticFeedback.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-    val songs by viewModel.songs.collectAsState()
-    val scanState by viewModel.scanState.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
+    val songs by viewModel.songs.collectAsStateWithLifecycle()
+    val scanState by viewModel.scanState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val scanSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showScanSheet by rememberSaveable { mutableStateOf(false) }

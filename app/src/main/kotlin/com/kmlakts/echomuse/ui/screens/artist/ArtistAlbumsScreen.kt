@@ -58,6 +58,7 @@ import com.kmlakts.echomuse.ui.component.LibraryAlbumGridItem
 import com.kmlakts.echomuse.ui.component.LocalMenuState
 import com.kmlakts.echomuse.ui.utils.backToMain
 import com.kmlakts.echomuse.viewmodels.ArtistAlbumsViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -68,11 +69,11 @@ fun ArtistAlbumsScreen(
 ) {
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
-    val artist by viewModel.artist.collectAsState()
-    val albums by viewModel.albums.collectAsState()
+    val artist by viewModel.artist.collectAsStateWithLifecycle()
+    val albums by viewModel.albums.collectAsStateWithLifecycle()
 
     val coroutineScope = rememberCoroutineScope()
     val lazyGridState = rememberLazyGridState()

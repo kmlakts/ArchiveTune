@@ -100,6 +100,7 @@ import com.kmlakts.echomuse.ui.utils.sendAddMissingDownloads
 import com.kmlakts.echomuse.ui.utils.sendRemoveDownloads
 import com.kmlakts.echomuse.utils.makeTimeString
 import com.kmlakts.echomuse.viewmodels.TopPlaylistViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -113,8 +114,8 @@ fun TopPlaylistScreen(
     val haptic = LocalHapticFeedback.current
     val focusManager = LocalFocusManager.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
     val maxSize = viewModel.top
 
     val songs by viewModel.topSongs.collectAsState(null)
@@ -150,7 +151,7 @@ fun TopPlaylistScreen(
         }
     }
 
-    val sortType by viewModel.topPeriod.collectAsState()
+    val sortType by viewModel.topPeriod.collectAsStateWithLifecycle()
     val name = stringResource(R.string.my_top) + " $maxSize"
 
     val downloadUtil = LocalDownloadUtil.current
