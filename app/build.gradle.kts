@@ -320,7 +320,6 @@ dependencies {
     implementation(project(":lyrics:unison"))
     implementation(project(":lyrics:youlyplus"))
     implementation(project(":canvas"))
-    implementation(project(":spotifycore"))
     implementation(project(":moriextractor"))
     implementation(project(":morideobfuscator"))
     implementation("com.materialkolor:material-kolor:5.0.0-alpha07")

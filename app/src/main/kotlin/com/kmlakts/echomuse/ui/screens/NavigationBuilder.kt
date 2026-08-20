@@ -37,7 +37,6 @@ import com.kmlakts.echomuse.ui.screens.playlist.AutoPlaylistScreen
 import com.kmlakts.echomuse.ui.screens.playlist.CachePlaylistScreen
 import com.kmlakts.echomuse.ui.screens.playlist.LocalPlaylistScreen
 import com.kmlakts.echomuse.ui.screens.playlist.OnlinePlaylistScreen
-import com.kmlakts.echomuse.ui.screens.playlist.SpotifyPlaylistScreen
 import com.kmlakts.echomuse.ui.screens.playlist.TopPlaylistScreen
 import com.kmlakts.echomuse.ui.screens.search.OnlineSearchResult
 import com.kmlakts.echomuse.ui.screens.search.OnlineSearchResultArgument
@@ -295,17 +294,6 @@ fun NavGraphBuilder.navigationBuilder(
             ),
     ) {
         LocalPlaylistScreen(navController, scrollBehavior)
-    }
-    composable(
-        route = "spotify_playlist/{playlistId}",
-        arguments =
-            listOf(
-                navArgument("playlistId") {
-                    type = NavType.StringType
-                },
-            ),
-    ) {
-        SpotifyPlaylistScreen(navController, scrollBehavior)
     }
     composable(
         route = "auto_playlist/{playlist}?tab={tab}",

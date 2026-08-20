@@ -84,14 +84,9 @@ import com.kmlakts.echomuse.LocalPlayerAwareWindowInsets
 import com.kmlakts.echomuse.LocalPlayerConnection
 import com.kmlakts.echomuse.R
 import com.kmlakts.echomuse.constants.LibraryFilter
-import com.kmlakts.echomuse.constants.ShowSpotifyPlaylistsKey
 import com.kmlakts.echomuse.extensions.toMediaItem
 import com.kmlakts.echomuse.playback.queues.ListQueue
-import com.kmlakts.echomuse.spotify.SpotifyLibraryViewModel
-import com.kmlakts.echomuse.spotify.SpotifyMapper
-import com.kmlakts.echomuse.spotify.models.SpotifyPlaylist
 import com.kmlakts.echomuse.ui.component.ExpressivePullToRefreshBox
-import com.kmlakts.echomuse.utils.rememberPreference
 import com.kmlakts.echomuse.viewmodels.LibraryMixViewModel
 import com.kmlakts.echomuse.viewmodels.LibraryTopMixEmptyReason
 import com.kmlakts.echomuse.viewmodels.LibraryTopMixUiModel
@@ -107,7 +102,6 @@ fun LibraryMixScreen(
     selectedTagIds: Set<String>,
     onTabSelected: (LibraryFilter) -> Unit,
     viewModel: LibraryMixViewModel = hiltViewModel(),
-    spotifyLibraryViewModel: SpotifyLibraryViewModel = hiltViewModel(),
 ) {
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
@@ -134,8 +128,6 @@ fun LibraryMixScreen(
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val mostPlayedAlbumUiState by viewModel.mostPlayedAlbumUiState.collectAsStateWithLifecycle()
     val topMixesUiState by viewModel.topMixesUiState.collectAsStateWithLifecycle()
-    val spotifyPlaylists by spotifyLibraryViewModel.playlists.collectAsStateWithLifecycle()
-    val (showSpotifyPlaylists) = rememberPreference(ShowSpotifyPlaylistsKey, false)
 
     val filteredPlaylistIds by database
         .playlistIdsByTags(
@@ -151,15 +143,6 @@ fun LibraryMixScreen(
                 matchesName && matchesTags
             }
         }
-    val visibleSpotifyPlaylists =
-        remember(showSpotifyPlaylists, spotifyPlaylists) {
-            if (showSpotifyPlaylists) {
-                spotifyPlaylists
-            } else {
-                emptyList()
-            }
-        }
-
     LaunchedEffect(viewModel) {
         viewModel.topMixEvents.collect { message ->
             snackbarHostState.showSnackbar(message)
@@ -410,7 +393,7 @@ fun LibraryMixScreen(
                 }
 
                 // Playlists Row
-                if (visiblePlaylists.isNotEmpty() || visibleSpotifyPlaylists.isNotEmpty()) {
+                if (visiblePlaylists.isNotEmpty()) {
                     item(key = "your_playlists") {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Row(
@@ -553,19 +536,6 @@ fun LibraryMixScreen(
                                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                         )
                                     }
-                                }
-
-                                items(
-                                    items = visibleSpotifyPlaylists.take(8),
-                                    key = { playlist -> "spotify_playlist_${playlist.id}" },
-                                    contentType = { "library_spotify_playlist" },
-                                ) { playlist ->
-                                    SpotifyPlaylistCompactCard(
-                                        playlist = playlist,
-                                        onClick = {
-                                            navController.navigate("spotify_playlist/${playlist.id}")
-                                        },
-                                    )
                                 }
 
                                 // Ending "More" card
@@ -727,89 +697,6 @@ fun LibraryMixScreen(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = playerAwareBottomPadding),
-        )
-    }
-}
-
-@Composable
-private fun SpotifyPlaylistCompactCard(
-    playlist: SpotifyPlaylist,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val thumbnailUrl = remember(playlist) { SpotifyMapper.getPlaylistThumbnail(playlist) }
-    val cardBgColor =
-        rememberArtworkCardColor(
-            thumbnailUrl = thumbnailUrl,
-            fallbackColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        )
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.97f else 1.0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
-        label = "SpotifyPlaylistCompactCardScale",
-    )
-
-    Column(
-        modifier =
-            modifier
-                .width(130.dp)
-                .graphicsLayer {
-                    scaleX = scale
-                    scaleY = scale
-                }.clip(RoundedCornerShape(32.dp))
-                .background(cardBgColor)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClick = onClick,
-                ).padding(12.dp),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .size(106.dp)
-                    .clip(RoundedCornerShape(24.dp)),
-        ) {
-            AsyncImage(
-                model = thumbnailUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
-            Box(
-                modifier =
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(6.dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.spotify_icon),
-                    contentDescription = stringResource(R.string.spotify_account),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(14.dp),
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = playlist.name,
-            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Text(
-            text = "${playlist.tracks?.total ?: 0} ${stringResource(R.string.tracks_label)}",
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
         )
     }
 }

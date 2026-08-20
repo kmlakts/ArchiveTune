@@ -55,7 +55,6 @@ include(":lyrics:betterlyrics")
 include(":lyrics:unison")
 include(":lyrics:youlyplus")
 include(":canvas")
-include(":spotifycore")
 include(":moriextractor")
 include(":morideobfuscator")
 

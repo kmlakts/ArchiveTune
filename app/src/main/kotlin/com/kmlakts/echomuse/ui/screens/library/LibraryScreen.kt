@@ -75,7 +75,6 @@ import com.kmlakts.echomuse.constants.DisableBlurKey
 import com.kmlakts.echomuse.constants.LibraryChipOrderKey
 import com.kmlakts.echomuse.constants.LibraryFilter
 import com.kmlakts.echomuse.constants.PlaylistTagOrderKey
-import com.kmlakts.echomuse.constants.ShowSpotifyPlaylistsKey
 import com.kmlakts.echomuse.constants.ShowTagsInLibraryKey
 import com.kmlakts.echomuse.constants.toLibraryFilterOrder
 import com.kmlakts.echomuse.constants.toPlaylistTagOrder
@@ -94,7 +93,6 @@ fun LibraryScreen(navController: NavController) {
     val (selectedTagIds, onSelectedTagIdsChange) = rememberPlaylistTagFilterState(database)
     val allTags by database.allTags().collectAsState(initial = emptyList())
     val (showTagsInLibrary) = rememberPreference(ShowTagsInLibraryKey, defaultValue = true)
-    val (showSpotifyPlaylists) = rememberPreference(ShowSpotifyPlaylistsKey, defaultValue = false)
     val (disableBlur) = rememberPreference(DisableBlurKey, false)
     val (libraryChipOrderPreference) =
         rememberPreference(
@@ -112,10 +110,8 @@ fun LibraryScreen(navController: NavController) {
                 .mapNotNull { tagId -> tagsById[tagId] }
         }
     val libraryFilters =
-        remember(showSpotifyPlaylists, libraryChipOrderPreference) {
-            libraryChipOrderPreference
-                .toLibraryFilterOrder()
-                .filter { filter -> showSpotifyPlaylists || filter != LibraryFilter.SPOTIFY }
+        remember(libraryChipOrderPreference) {
+            libraryChipOrderPreference.toLibraryFilterOrder()
         }
 
     if (showTagsManagementDialog) {
@@ -189,7 +185,6 @@ fun LibraryScreen(navController: NavController) {
                     when (targetFilter) {
                         LibraryFilter.LIBRARY -> 116.dp
                         LibraryFilter.PLAYLISTS -> 132.dp
-                        LibraryFilter.SPOTIFY -> 168.dp
                         LibraryFilter.SONGS -> 102.dp
                         LibraryFilter.ARTISTS -> 116.dp
                         LibraryFilter.ALBUMS -> 110.dp
@@ -259,10 +254,6 @@ fun LibraryScreen(navController: NavController) {
                         )
                     }
 
-                    LibraryFilter.SPOTIFY -> {
-                        LibrarySpotifyPlaylistsScreen(navController = navController)
-                    }
-
                     LibraryFilter.SONGS -> {
                         LibrarySongsScreen(
                             navController = navController,
@@ -318,7 +309,6 @@ fun LibraryScreen(navController: NavController) {
                             when (filter) {
                                 LibraryFilter.LIBRARY -> stringResource(R.string.filter_library)
                                 LibraryFilter.PLAYLISTS -> stringResource(R.string.playlists)
-                                LibraryFilter.SPOTIFY -> stringResource(R.string.spotify_playlists)
                                 LibraryFilter.SONGS -> stringResource(R.string.songs)
                                 LibraryFilter.ARTISTS -> stringResource(R.string.artists)
                                 LibraryFilter.ALBUMS -> stringResource(R.string.albums)
@@ -327,7 +317,6 @@ fun LibraryScreen(navController: NavController) {
                             when (filter) {
                                 LibraryFilter.LIBRARY -> R.drawable.graphic_eq
                                 LibraryFilter.PLAYLISTS -> R.drawable.queue_music
-                                LibraryFilter.SPOTIFY -> R.drawable.spotify_icon
                                 LibraryFilter.SONGS -> R.drawable.music_note
                                 LibraryFilter.ARTISTS -> R.drawable.person
                                 LibraryFilter.ALBUMS -> R.drawable.album
