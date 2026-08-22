@@ -154,7 +154,7 @@ fun PlayerSettings(navController: NavController) {
     val (stopMusicOnTaskClear, onStopMusicOnTaskClearChange) =
         rememberPreference(
             StopMusicOnTaskClearKey,
-            defaultValue = false,
+            defaultValue = true,
         )
     val (historyDuration, onHistoryDurationChange) =
         rememberPreference(

@@ -7845,7 +7845,7 @@ class MusicService :
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
 
-        val stopMusicOnTaskClearEnabled = dataStore.get(StopMusicOnTaskClearKey, false)
+        val stopMusicOnTaskClearEnabled = dataStore.get(StopMusicOnTaskClearKey, true)
 
         try {
             val state = togetherSessionState.value
