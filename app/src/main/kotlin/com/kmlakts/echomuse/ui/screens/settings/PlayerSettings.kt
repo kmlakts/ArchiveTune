@@ -226,13 +226,11 @@ fun PlayerSettings(navController: NavController) {
     var showExternalDownloaderPackageDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(playerStreamClient, isEchomuseExtractorEnabled) {
-        if (
-            playerStreamClient !in playerStreamClients ||
-            (
-                playerStreamClient == PlayerStreamClient.ECHOMUSE_EXTRACTOR &&
-                    !isEchomuseExtractorEnabled
-            )
-        ) {
+        // Only correct the genuinely invalid case (extractor selected but unavailable).
+        // Values outside this screen's visible picker (e.g. the MusicService-level
+        // ANDROID_VR/VISIONOS default) are valid elsewhere and must not be clobbered
+        // just because this screen doesn't expose them as a selectable option here.
+        if (playerStreamClient == PlayerStreamClient.ECHOMUSE_EXTRACTOR && !isEchomuseExtractorEnabled) {
             onPlayerStreamClientChange(PlayerStreamClient.WEB_REMIX)
         }
     }

@@ -544,6 +544,10 @@ object YTPlayerUtils {
                 ANDROID_MUSIC
             }
 
+            PlayerStreamClient.VISIONOS -> {
+                VISIONOS
+            }
+
             else -> {
                 WEB_REMIX
             }
