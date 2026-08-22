@@ -957,6 +957,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                     val onActiveChange: (Boolean) -> Unit = { newActive ->
+                        if (newActive && !active) {
+                            onQueryChange(TextFieldValue())
+                        }
                         active = newActive
                         if (!newActive) {
                             focusManager.clearFocus()
