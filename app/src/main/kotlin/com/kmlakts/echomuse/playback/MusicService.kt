@@ -2136,6 +2136,31 @@ class MusicService :
             deck.setMediaItems(fullPlaylist, target.index, 0L)
             deck.playbackParameters = player.playbackParameters
             deck.skipSilenceEnabled = localPlayer.skipSilenceEnabled
+            // This deck becomes the app's canonical player once it is promoted at the
+            // end of the crossfade, so it has to carry the outgoing deck's playback
+            // mode with it. Without this it silently came up with media3's defaults
+            // (repeat off, shuffle off): repeat-one therefore repeated exactly once -
+            // resolveCrossfadeTarget() read REPEAT_MODE_ONE off the still-active deck
+            // and correctly targeted the same track, but the deck promoted in its
+            // place no longer had that repeat mode, so the following transition
+            // resolved nextMediaItemIndex and fell through into the playlist. It also
+            // fed the reset mode back into settings, because MusicService listens on
+            // the DeckSwitchingPlayer facade and the swap surfaces the delegate's
+            // differing state as a genuine onRepeatModeChanged/onShuffleModeEnabledChanged.
+            deck.repeatMode = player.repeatMode
+            deck.shuffleModeEnabled = player.shuffleModeEnabled
+            if (player.shuffleModeEnabled) {
+                // setMediaItems() above reset this deck to an identity shuffle order,
+                // so mirror the live one too - otherwise the promoted deck keeps
+                // shuffling but follows a different sequence than the queue the user
+                // can see.
+                val shuffledIndices = player.getQueueWindows().map { it.firstPeriodIndex }
+                if (shuffledIndices.size == fullPlaylist.size) {
+                    deck.setShuffleOrder(
+                        DefaultShuffleOrder(shuffledIndices.toIntArray(), System.currentTimeMillis()),
+                    )
+                }
+            }
             deck.prepare()
             secondaryCrossfadePlayer = deck
             secondaryCrossfadeTarget = target
