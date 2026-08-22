@@ -112,6 +112,8 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import me.saket.squiggles.SquigglySlider
 import com.kmlakts.echomuse.R
+import com.kmlakts.echomuse.constants.AudioOffload
+import com.kmlakts.echomuse.constants.CrossfadeEnabledKey
 import com.kmlakts.echomuse.constants.EnableHapticFeedbackKey
 import com.kmlakts.echomuse.constants.PlayerBackgroundStyle
 import com.kmlakts.echomuse.constants.PlayerDesignStyle
@@ -274,6 +276,23 @@ fun PlayerTopActions(
     val haptic = LocalHapticFeedback.current
     val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsStateWithLifecycle()
 
+    // Same DataStore-backed preference the Playback settings screen edits, so the two
+    // stay in sync in both directions without any extra plumbing: MusicService already
+    // observes CrossfadeEnabledKey directly, and rememberPreference reads the same flow.
+    val (crossfadeEnabled, onCrossfadeEnabledChange) = rememberPreference(CrossfadeEnabledKey, defaultValue = false)
+    val (_, onAudioOffloadChange) = rememberPreference(AudioOffload, defaultValue = false)
+    val onToggleCrossfade: () -> Unit = {
+        val enabled = !crossfadeEnabled
+        // Mirror the settings screen, which clears audio offload when crossfade is
+        // switched on. The service already forces offload off while crossfading, so
+        // this only keeps the stored preference honest - without it the offload
+        // switch in settings would keep reading "on" while doing nothing.
+        if (enabled) {
+            onAudioOffloadChange(false)
+        }
+        onCrossfadeEnabledChange(enabled)
+    }
+
     when (playerDesignStyle) {
         PlayerDesignStyle.V2 -> {
             val shareShape =
@@ -422,6 +441,31 @@ fun PlayerTopActions(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Active/inactive styling follows the same convention as the shuffle and
+                // repeat buttons in the transport row: a stronger container tint plus a
+                // full-opacity icon when on, dimmed when off.
+                Surface(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onToggleCrossfade()
+                    },
+                    shape = RoundedCornerShape(14.dp),
+                    color = textBackgroundColor.copy(alpha = if (crossfadeEnabled) 0.25f else 0.12f),
+                    modifier =
+                        Modifier
+                            .height(44.dp)
+                            .width(44.dp),
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                        Icon(
+                            painter = painterResource(R.drawable.animation),
+                            contentDescription = stringResource(R.string.audio_crossfade_title),
+                            tint = textBackgroundColor.copy(alpha = if (crossfadeEnabled) 1f else 0.6f),
+                            modifier = Modifier.size(22.dp),
+                        )
+                    }
+                }
+
                 Surface(
                     onClick = {
                         val intent =
