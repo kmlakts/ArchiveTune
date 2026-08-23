@@ -51,9 +51,14 @@ captures/
 .idea/navEditor.xml
 
 # Keystore files
-# Uncomment the following lines if you do not want to check your keystore files in.
-#*.jks
-#*.keystore
+# Signing keys must never be committed. A keystore was previously committed to
+# this repo and had to be purged from history with git filter-repo; treat any
+# key that reaches a commit as permanently compromised and rotate it.
+*.jks
+*.jks.base64
+*.keystore
+*.p12
+app/keystore/
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
