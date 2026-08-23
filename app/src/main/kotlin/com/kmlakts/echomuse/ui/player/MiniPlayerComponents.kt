@@ -385,9 +385,13 @@ private fun MiniPlayerArtwork(
                     modifier = Modifier.fillMaxSize(),
                 )
             } else {
-                Image(
-                    painter = painterResource(R.drawable.about_splash),
+                // Generic "no artwork" glyph rather than the app icon: a filled brand
+                // square reads as branding, not as missing album art. Tinted so it sits
+                // correctly on whatever surface the mini player is drawn over.
+                Icon(
+                    painter = painterResource(R.drawable.artwork_placeholder),
                     contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),
                 )
             }

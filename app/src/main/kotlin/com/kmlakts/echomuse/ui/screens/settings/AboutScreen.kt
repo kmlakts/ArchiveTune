@@ -60,7 +60,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -671,12 +670,11 @@ private fun SurfaceAppIcon(modifier: Modifier = Modifier) {
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     ) {
-        val iconTint = MaterialTheme.colorScheme.onPrimaryContainer
-        val iconColorFilter = remember(iconTint) { ColorFilter.tint(iconTint) }
+        // Rendered untinted: about_splash is now the full-colour brand mark, so a
+        // ColorFilter here would flatten it into a solid onPrimaryContainer square.
         Image(
             painter = painterResource(R.drawable.about_splash),
             contentDescription = null,
-            colorFilter = iconColorFilter,
             modifier =
                 Modifier
                     .padding(AboutSpacing.sm)

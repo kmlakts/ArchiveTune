@@ -1726,10 +1726,15 @@ class MainActivity : ComponentActivity() {
                                                     ),
                                                 title = {
                                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                                        // app icon
+                                                        // app icon - Color.Unspecified so the
+                                                        // full-colour brand mark renders as-is
+                                                        // instead of being flattened to a
+                                                        // single-colour silhouette by the
+                                                        // default LocalContentColor tint.
                                                         Icon(
                                                             painter = painterResource(R.drawable.about_appbar),
                                                             contentDescription = null,
+                                                            tint = Color.Unspecified,
                                                             modifier =
                                                                 Modifier
                                                                     .size(35.dp)

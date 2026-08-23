@@ -64,6 +64,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -562,7 +563,15 @@ fun AppearanceSettings(navController: NavController) {
                     PreferenceEntry(
                         title = { Text(stringResource(R.string.app_icon)) },
                         description = stringResource(R.string.app_icon_description),
-                        icon = { Icon(painterResource(R.drawable.app_icon_small), null) },
+                        // Color.Unspecified: app_icon_small is the full-colour brand mark,
+                        // so the default tint would render it as a solid square.
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.app_icon_small),
+                                contentDescription = null,
+                                tint = Color.Unspecified,
+                            )
+                        },
                         onClick = { navController.navigate("settings/appearance/icon") },
                     )
                 }

@@ -68,6 +68,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -604,9 +605,13 @@ private fun SunnyIdentityPanel(
             shadowElevation = 1.dp,
         ) {
             Box(contentAlignment = Alignment.Center) {
+                // Only the welcome page uses this panel, and its icon is the
+                // full-colour app mark, so it is rendered untinted - tinting would
+                // collapse it into a solid square.
                 Icon(
                     painter = painterResource(iconResId),
                     contentDescription = null,
+                    tint = Color.Unspecified,
                     modifier = Modifier.size(150.dp),
                 )
             }
